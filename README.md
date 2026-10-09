@@ -2,12 +2,12 @@
 ![UI](https://img.shields.io/badge/UI-JetpackCompose-blue)
 # Kaiju
 
-## **Integrantes**
-| Nombres          | Apellidos       |
-| ---------------- | --------------- |
-| Luis Antonio     | Álvarez Requejo |
-| Mario Ignacio    | Andrade Salinas |
-| Bayron Alexander | Urrutia Flores  |
+## **Integrantes **
+| Nombre del Equipo| Nombres          | Apellidos       |
+|------------------| ---------------- | --------------- |
+| DevCat           | Luis Antonio     | Álvarez Requejo |
+|                  | Mario Ignacio    | Andrade Salinas |
+|                  | Bayron Alexander | Urrutia Flores  |
 
 ## **Caso**
 El caso de la tienda Kaiju solicita desarrollar un Producto Mínimo Viable (MVP) para una aplicación móvil Android. Su principal objetivo es automatizar y optimizar el registro, la trazabilidad y la gestión del inventario y ventas, reemplazando el control manual actual por uno actualizado en tiempo real.
