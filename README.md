@@ -1,6 +1,6 @@
 ![Lenguaje](https://img.shields.io/badge/Lenguaje-Kotlin-purple)
 ![UI](https://img.shields.io/badge/UI-JetpackCompose-blue)
-# AppKaiju
+# Kaiju
 
 ## **Integrantes**
 | Nombres          | Apellidos       |
