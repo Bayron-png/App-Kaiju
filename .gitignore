@@ -1,2 +1,8 @@
-# IDEs de JetBrains (IntelliJ)
-.idea/
+/.gradle
+/build
+/captures
+/.externalNativeBuild
+/.cxx
+/.idea
+*.iml
+local.properties
