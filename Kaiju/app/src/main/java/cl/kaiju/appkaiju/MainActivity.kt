@@ -3,7 +3,6 @@ package cl.kaiju.appkaiju
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,19 +10,47 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import cl.kaiju.appkaiju.navigation.Rutas
+import cl.kaiju.appkaiju.screen.PantallaListaInventario
+import cl.kaiju.appkaiju.screen.PantallaLogin
 import cl.kaiju.appkaiju.ui.theme.KaijuDevCatTheme
+import cl.kaiju.appkaiju.viewmodel.LoginViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             KaijuDevCatTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                val loginViewModel: LoginViewModel = viewModel()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = Rutas.Login.ruta
+                ) {
+                    composable(Rutas.Login.ruta) {
+                        PantallaLogin(
+                            loginViewModel = loginViewModel,
+                            onLoginExitoso = {
+                                navController.navigate(Rutas.Inventario.ruta) {
+                                    popUpTo(Rutas.Login.ruta) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    composable(Rutas.Inventario.ruta) {
+                        PantallaListaInventario(
+                            onCerrarSesion = {
+                                navController.navigate(Rutas.Login.ruta) {
+                                    popUpTo(Rutas.Inventario.ruta) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
