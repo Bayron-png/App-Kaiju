@@ -2,14 +2,25 @@ package cl.kaiju.appkaiju.viewmodel
 
 import androidx.lifecycle.ViewModel
 import cl.kaiju.appkaiju.model.EstadoLogin
+import cl.kaiju.appkaiju.model.RolUsuario
+import cl.kaiju.appkaiju.model.Usuario
+import cl.kaiju.appkaiju.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val usuarioRepository: UsuarioRepository = UsuarioRepository()
+) : ViewModel() {
 
     private val _estado = MutableStateFlow(EstadoLogin())
     val estado: StateFlow<EstadoLogin> = _estado.asStateFlow()
+
+    fun ingresarComoInvitado() {
+        _estado.value = _estado.value.copy(
+            usuarioAutenticado = Usuario("Invitado", "invitado@kaiju.cl","", RolUsuario.CLIENTE)
+        )
+    }
 
     fun onCorreoChange(nuevoCorreo: String) {
         _estado.value = _estado.value.copy(
@@ -25,7 +36,36 @@ class LoginViewModel : ViewModel() {
         )
     }
 
-    fun validarFormulario(): Boolean {
+    fun iniciarSesion(): Boolean {
+        if (!validarFormulario()) return false
+
+        val correo = _estado.value.correo
+        val contrasena = _estado.value.contrasena
+
+        val usuario = usuarioRepository.autenticar(correo, contrasena)
+
+        return if (usuario != null) {
+            _estado.value = _estado.value.copy(
+                usuarioAutenticado = usuario,
+                errorCorreo = null,
+                errorContrasena = null
+            )
+            true
+        } else {
+            if (usuarioRepository.existeCorreo(correo)) {
+                _estado.value = _estado.value.copy(
+                    errorContrasena = "Contraseña incorrecta"
+                )
+            } else {
+                _estado.value = _estado.value.copy(
+                    errorCorreo = "Usuario no registrado"
+                )
+            }
+            false
+        }
+    }
+
+    private fun validarFormulario(): Boolean {
         val actual = _estado.value
         var esValido = true
         var errCorreo: String? = null
@@ -35,7 +75,7 @@ class LoginViewModel : ViewModel() {
             errCorreo = "El correo es obligatorio"
             esValido = false
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(actual.correo).matches()) {
-            errCorreo = "Ingrese un correo válido (ej: usuario@kaiju.com)"
+            errCorreo = "Ingrese un correo válido"
             esValido = false
         }
 

@@ -1,6 +1,8 @@
 package cl.kaiju.appkaiju
 
 import android.os.Bundle
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Text
@@ -40,7 +42,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Rutas.Inventario.ruta) {
+                        val estadoLogin by loginViewModel.estado.collectAsState()
+
+                        val nombreRol = estadoLogin.usuarioAutenticado?.rol?.etiqueta ?: "Kaiju"
+
                         PantallaInventario(
+                            nombreRol = nombreRol,
                             onCerrarSesion = {
                                 navController.navigate(Rutas.Login.ruta) {
                                     popUpTo(Rutas.Inventario.ruta) { inclusive = true }

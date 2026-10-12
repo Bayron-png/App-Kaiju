@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -83,7 +84,7 @@ fun PantallaLogin(
 
         Button(
             onClick = {
-                if (loginViewModel.validarFormulario()) {
+                if (loginViewModel.iniciarSesion()) {
                     onLoginExitoso()
                 }
             },
@@ -93,5 +94,18 @@ fun PantallaLogin(
         ) {
             Text("Ingresar")
         }
+
+        Spacer(modifier = Modifier.height(12.dp)) // <-- Espacio
+
+        // AQUÍ VA EL BOTÓN DE INVITADO:
+        TextButton(
+            onClick = {
+                loginViewModel.ingresarComoInvitado()
+                onLoginExitoso()
+            }
+        ) {
+            Text("Continuar como Invitado")
+        }
+
     }
 }

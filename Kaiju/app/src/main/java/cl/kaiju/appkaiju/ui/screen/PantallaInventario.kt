@@ -25,6 +25,7 @@ import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaInventario(
+    nombreRol: String = "Kaiju",
     inventarioViewModel: InventarioViewModel = viewModel(),
     onCerrarSesion: () -> Unit = {}
 ) {
@@ -35,7 +36,7 @@ fun PantallaInventario(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Kaiju | Control de Inventario") },
+                title = { Text("$nombreRol | Control de Inventario") },
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.Default.Inventory,
