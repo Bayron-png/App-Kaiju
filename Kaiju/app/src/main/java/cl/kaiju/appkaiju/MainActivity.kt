@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cl.kaiju.appkaiju.navigation.Rutas
-import cl.kaiju.appkaiju.ui.screen.PantallaListaInventario
+import cl.kaiju.appkaiju.ui.screen.PantallaInventario
 import cl.kaiju.appkaiju.ui.screen.PantallaLogin
 import cl.kaiju.appkaiju.ui.theme.KaijuDevCatTheme
 import cl.kaiju.appkaiju.viewmodel.LoginViewModel
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Rutas.Inventario.ruta) {
-                        PantallaListaInventario(
+                        PantallaInventario(
                             onCerrarSesion = {
                                 navController.navigate(Rutas.Login.ruta) {
                                     popUpTo(Rutas.Inventario.ruta) { inclusive = true }
