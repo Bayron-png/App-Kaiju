@@ -1,78 +1,103 @@
 package cl.kaiju.appkaiju.ui.screen
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cl.kaiju.appkaiju.ui.components.ListaProductos
+import cl.kaiju.appkaiju.model.Producto
 import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun PantallaInventario(
-    nombreRol: String = "Kaiju",
     inventarioViewModel: InventarioViewModel = viewModel(),
-    onCerrarSesion: () -> Unit = {}
+    onCerrarSesion: () -> Unit = {},
+    onIrAFormulario: () -> Unit = {},          // 1. Recibe la acción para el formulario
+    onIrADetalle: (String) -> Unit = {},       // 2. Recibe la acción para el detalle (necesita el SKU)
+    onIrAAlertas: () -> Unit = {}              // 3. Recibe la acción para las alertas
 ) {
     val productosState by inventarioViewModel.productos.collectAsState()
 
-    var selectedItem by remember { mutableIntStateOf(0) }
+    val productosDePrueba = if (productosState.isNotEmpty()) {
+        productosState
+    } else {
+        listOf(
+            Producto(sku = "SKU-101", nombre = "Polera Roja Kaiju", categoria = "Ropa", precio = 15000.0, cantidadDisponible = 18, stock = 20, stockMinimo = 5),
+            Producto(sku = "SKU-102", nombre = "Polera Azul Kaiju", categoria = "Ropa", precio = 16000.0, cantidadDisponible = 3, stock = 20, stockMinimo = 5)
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("$nombreRol | Control de Inventario") },
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Inventory,
-                        contentDescription = "Logo Kaiju"
-                    )
-                },
+                title = { Text("Kaiju - Catálogo de Inventario") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
+        },
+
+        floatingActionButton = {
+            FloatingActionButton(onClick = { onIrAFormulario() }) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar Producto")
+            }
         },
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = selectedItem == 0,
-                    onClick = { selectedItem = 0 },
-                    icon = { Icon(Icons.Default.Inventory, contentDescription = "Inventario") },
-                    label = { Text("Inventario") }
+                    selected = true,
+                    onClick = { /* Ya estás aquí */ },
+                    icon = { Icon(Icons.Default.Inventory, contentDescription = "Catálogo") },
+                    label = { Text("Catálogo") }
+                )
+
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { onIrAAlertas() },
+                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Alertas") },
+                    label = { Text("Alertas") }
                 )
                 NavigationBarItem(
-                    selected = selectedItem == 1,
-                    onClick = {
-                        selectedItem = 1
-                        onCerrarSesion()
-                    },
-                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Cerrar Sesión") },
+                    selected = false,
+                    onClick = { onCerrarSesion() },
+                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Salir") },
                     label = { Text("Salir") }
                 )
             }
         }
-    ) { innerPadding ->
-        ListaProductos(
-            productos = productosState,
-            paddingValues = innerPadding
-        )
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(productosDePrueba) { producto ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onIrADetalle(producto.sku) }
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = producto.nombre, style = MaterialTheme.typography.titleMedium)
+                        Text(text = "SKU: ${producto.sku} | Disponibles: ${producto.cantidadDisponible}")
+                        Text(text = "Estado: ${producto.estadoStock}", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
     }
 }

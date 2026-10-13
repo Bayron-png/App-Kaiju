@@ -6,6 +6,7 @@ data class Producto(
     val categoria: String,
     val precio: Double,
     val cantidadDisponible: Int,
+    val stock: Int,
     val stockMinimo: Int
 ) {
 

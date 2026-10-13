@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.kaiju.appkaiju.viewmodel.LoginViewModel
 
 @Composable
+
 fun PantallaLogin(
     loginViewModel: LoginViewModel = viewModel(),
     onLoginExitoso: () -> Unit = {}
@@ -97,7 +98,6 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(12.dp)) // <-- Espacio
 
-        // AQUÍ VA EL BOTÓN DE INVITADO:
         TextButton(
             onClick = {
                 loginViewModel.ingresarComoInvitado()
