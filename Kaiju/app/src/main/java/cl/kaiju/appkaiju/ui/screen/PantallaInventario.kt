@@ -23,9 +23,9 @@ import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
 fun PantallaInventario(
     inventarioViewModel: InventarioViewModel = viewModel(),
     onCerrarSesion: () -> Unit = {},
-    onIrAFormulario: () -> Unit = {},          // 1. Recibe la acción para el formulario
-    onIrADetalle: (String) -> Unit = {},       // 2. Recibe la acción para el detalle (necesita el SKU)
-    onIrAAlertas: () -> Unit = {}              // 3. Recibe la acción para las alertas
+    onIrAFormulario: () -> Unit = {},
+    onIrADetalle: (String) -> Unit = {},
+    onIrAAlertas: () -> Unit = {}
 ) {
     val productosState by inventarioViewModel.productos.collectAsState()
 

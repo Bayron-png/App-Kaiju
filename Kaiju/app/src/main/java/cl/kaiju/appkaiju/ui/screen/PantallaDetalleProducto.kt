@@ -7,12 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
 fun PantallaDetalleProducto(
     skuProducto: String?,
+    inventarioViewModel: InventarioViewModel = viewModel(),
     onVolver: () -> Unit,
     onIrAMovimiento: () -> Unit
 ) {
@@ -55,13 +58,16 @@ fun PantallaDetalleProducto(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = onIrAMovimiento,
+                onClick = {
+                    if (skuProducto != null) {
+                        inventarioViewModel.seleccionarSku(skuProducto)
+                    }
+                    onIrAMovimiento()
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Registrar Nuevo Movimiento")
             }
         }
-
     }
-
 }

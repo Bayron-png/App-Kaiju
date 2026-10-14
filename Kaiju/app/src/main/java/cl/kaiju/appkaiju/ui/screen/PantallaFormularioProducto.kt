@@ -7,11 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.kaiju.appkaiju.model.Producto
+import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
 fun PantallaFormularioProducto(
+    inventarioViewModel: InventarioViewModel = viewModel(),
     onVolver: () -> Unit,
     onGuardarExitoso: () -> Unit
 ) {
@@ -54,7 +58,21 @@ fun PantallaFormularioProducto(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { onGuardarExitoso() },
+                onClick = {
+                    val stockInt = stock.toIntOrNull() ?: 10
+                    val nuevoProducto = Producto(
+                        sku = sku,
+                        nombre = nombre,
+                        categoria = categoria,
+                        precio = precio.toDoubleOrNull() ?: 0.0,
+                        cantidadDisponible = stockInt,
+                        stock = stockInt,
+                        stockMinimo = 3
+                    )
+
+                    inventarioViewModel.agregarProducto(nuevoProducto)
+                    onGuardarExitoso()
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Guardar Producto")

@@ -14,6 +14,16 @@ class InventarioViewModel(
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
     val productos: StateFlow<List<Producto>> = _productos.asStateFlow()
 
+    var skuSeleccionado: String = ""
+        private set
+
+    fun seleccionarSku(sku: String) {
+        skuSeleccionado = sku
+    }
+
+    private val _historial = MutableStateFlow<List<String>>(emptyList())
+    val historial: StateFlow<List<String>> = _historial.asStateFlow()
+
     init {
         cargarProductos()
     }
@@ -23,7 +33,6 @@ class InventarioViewModel(
         _productos.value = if (listaInicial.isNotEmpty()) {
             listaInicial
         } else {
-            // Lista por defecto si el repositorio aún está vacío
             listOf(
                 Producto(sku = "SKU-101", nombre = "Polera Roja Kaiju", categoria = "Ropa", precio = 15000.0, cantidadDisponible = 18, stock = 20, stockMinimo = 5),
                 Producto(sku = "SKU-102", nombre = "Polera Azul Kaiju", categoria = "Ropa", precio = 16000.0, cantidadDisponible = 3, stock = 20, stockMinimo = 5),
@@ -34,7 +43,6 @@ class InventarioViewModel(
         }
     }
 
-    // RF-06, RF-07, RF-08: Registrar Entradas y Salidas de Inventario
     fun registrarMovimiento(sku: String, esEntrada: Boolean, cantidad: Int) {
         val listaActual = _productos.value.toMutableList()
         val index = listaActual.indexOfFirst { it.sku == sku }
@@ -44,16 +52,19 @@ class InventarioViewModel(
             val nuevaCantidad = if (esEntrada) {
                 productoActual.cantidadDisponible + cantidad
             } else {
-                (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0) // No permite stock negativo
+                (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0)
             }
 
             // Se crea una copia con la nueva cantidad disponible
             listaActual[index] = productoActual.copy(cantidadDisponible = nuevaCantidad)
             _productos.value = listaActual
+
+            val tipoMovimiento = if (esEntrada) "Entrada" else "Salida"
+            val registro = "[$tipoMovimiento] SKU: $sku - Cantidad: $cantidad (Stock actual: $nuevaCantidad)"
+            _historial.value = _historial.value + registro
         }
     }
 
-    // RF-05: Agregar Nuevo Producto desde el Formulario
     fun agregarProducto(nuevoProducto: Producto) {
         val listaActual = _productos.value.toMutableList()
         listaActual.add(nuevoProducto)
