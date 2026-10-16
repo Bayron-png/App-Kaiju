@@ -1,5 +1,6 @@
-package cl.kaiju.appkaiju.viewmodel
+package cl.kaiju.appkaiju.viewmodel.login
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import cl.kaiju.appkaiju.model.login.EstadoLogin
 import cl.kaiju.appkaiju.model.login.RolUsuario
@@ -18,7 +19,7 @@ class LoginViewModel(
 
     fun ingresarComoInvitado() {
         _estado.value = _estado.value.copy(
-            usuarioAutenticado = Usuario("Invitado", "invitado@kaiju.cl","", RolUsuario.CLIENTE)
+            usuarioAutenticado = Usuario("Invitado", "invitado@kaiju.cl", "", RolUsuario.CLIENTE)
         )
     }
 
@@ -74,7 +75,7 @@ class LoginViewModel(
         if (actual.correo.isBlank()) {
             errCorreo = "El correo es obligatorio"
             esValido = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(actual.correo).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(actual.correo).matches()) {
             errCorreo = "Ingrese un correo válido"
             esValido = false
         }

@@ -17,8 +17,8 @@ import cl.kaiju.appkaiju.ui.screen.formulario.PantallaFormularioProducto
 import cl.kaiju.appkaiju.ui.screen.login.PantallaLogin
 import cl.kaiju.appkaiju.ui.screen.movimientos.PantallaMovimiento
 import cl.kaiju.appkaiju.ui.theme.KaijuDevCatTheme
-import cl.kaiju.appkaiju.viewmodel.LoginViewModel
-import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
+import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
+import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

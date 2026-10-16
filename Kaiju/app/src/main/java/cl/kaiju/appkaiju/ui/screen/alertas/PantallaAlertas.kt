@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
+import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
