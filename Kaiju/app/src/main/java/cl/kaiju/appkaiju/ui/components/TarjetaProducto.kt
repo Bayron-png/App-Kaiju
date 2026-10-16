@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import cl.kaiju.appkaiju.model.Producto
+import cl.kaiju.appkaiju.model.producto.Producto
 import cl.kaiju.appkaiju.ui.theme.StockDisponible
 import cl.kaiju.appkaiju.ui.theme.StockConPocasUnidades
 import cl.kaiju.appkaiju.ui.theme.StockAgotado

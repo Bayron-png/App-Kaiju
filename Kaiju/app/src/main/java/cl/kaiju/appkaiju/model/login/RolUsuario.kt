@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.model
+package cl.kaiju.appkaiju.model.login
 
 enum class RolUsuario(val etiqueta: String) {
     ADMINISTRADOR("Administrador"),

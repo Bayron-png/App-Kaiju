@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cl.kaiju.appkaiju.model.Producto
+import cl.kaiju.appkaiju.model.producto.Producto
 
 @Composable
 fun ListaProductos(

@@ -1,9 +1,9 @@
 package cl.kaiju.appkaiju.viewmodel
 
 import androidx.lifecycle.ViewModel
-import cl.kaiju.appkaiju.model.EstadoLogin
-import cl.kaiju.appkaiju.model.RolUsuario
-import cl.kaiju.appkaiju.model.Usuario
+import cl.kaiju.appkaiju.model.login.EstadoLogin
+import cl.kaiju.appkaiju.model.login.RolUsuario
+import cl.kaiju.appkaiju.model.login.Usuario
 import cl.kaiju.appkaiju.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

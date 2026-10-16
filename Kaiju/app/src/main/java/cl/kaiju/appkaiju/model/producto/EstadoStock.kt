@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.model
+package cl.kaiju.appkaiju.model.producto
 
 enum class EstadoStock {
     AGOTADO,

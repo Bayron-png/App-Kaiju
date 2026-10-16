@@ -1,6 +1,6 @@
 package cl.kaiju.appkaiju.repository
 
-import cl.kaiju.appkaiju.model.Producto
+import cl.kaiju.appkaiju.model.producto.Producto
 
 class InventarioRepository {
     fun obtenerProductos(): List<Producto> {

@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.model
+package cl.kaiju.appkaiju.model.login
 
 data class Usuario(
     val nombre: String,

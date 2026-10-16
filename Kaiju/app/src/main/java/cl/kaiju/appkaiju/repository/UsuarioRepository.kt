@@ -1,7 +1,7 @@
 package cl.kaiju.appkaiju.repository
 
-import cl.kaiju.appkaiju.model.RolUsuario
-import cl.kaiju.appkaiju.model.Usuario
+import cl.kaiju.appkaiju.model.login.RolUsuario
+import cl.kaiju.appkaiju.model.login.Usuario
 
 class UsuarioRepository {
 

@@ -1,6 +1,6 @@
-package cl.kaiju.appkaiju.model
+package cl.kaiju.appkaiju.model.producto
 data class Producto(
-    val sku: String,
+    val sku: String, // StockKeepingUnit: Código del producto
     val nombre: String,
     val categoria: String,
     val precio: Double,
