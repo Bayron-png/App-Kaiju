@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.ui.screen
+package cl.kaiju.appkaiju.ui.screen.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

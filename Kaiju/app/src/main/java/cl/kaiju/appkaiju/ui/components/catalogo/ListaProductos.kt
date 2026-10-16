@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.ui.components
+package cl.kaiju.appkaiju.ui.components.catalogo
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

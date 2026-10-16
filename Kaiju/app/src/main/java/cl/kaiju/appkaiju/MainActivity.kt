@@ -10,7 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cl.kaiju.appkaiju.navigation.Rutas
-import cl.kaiju.appkaiju.ui.screen.*
+import cl.kaiju.appkaiju.ui.screen.alertas.PantallaAlertas
+import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaDetalleProducto
+import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaInventario
+import cl.kaiju.appkaiju.ui.screen.formulario.PantallaFormularioProducto
+import cl.kaiju.appkaiju.ui.screen.login.PantallaLogin
+import cl.kaiju.appkaiju.ui.screen.movimientos.PantallaMovimiento
 import cl.kaiju.appkaiju.ui.theme.KaijuDevCatTheme
 import cl.kaiju.appkaiju.viewmodel.LoginViewModel
 import cl.kaiju.appkaiju.viewmodel.InventarioViewModel
@@ -48,7 +53,13 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             onIrAFormulario = { navController.navigate(Rutas.FormularioProducto.ruta) },
-                            onIrADetalle = { sku -> navController.navigate(Rutas.DetalleProducto.crearRuta(sku)) },
+                            onIrADetalle = { sku ->
+                                navController.navigate(
+                                    Rutas.DetalleProducto.crearRuta(
+                                        sku
+                                    )
+                                )
+                            },
                             onIrAAlertas = { navController.navigate(Rutas.Alertas.ruta) }
                         )
                     }

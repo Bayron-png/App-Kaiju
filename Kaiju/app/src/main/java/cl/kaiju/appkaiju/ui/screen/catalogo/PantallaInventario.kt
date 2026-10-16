@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.ui.screen
+package cl.kaiju.appkaiju.ui.screen.catalogo
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
