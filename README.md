@@ -1,5 +1,5 @@
 ![Lenguaje](https://img.shields.io/badge/Lenguaje-Kotlin-purple)
-![UI](https://img.shields.io/badge/UI-JetpackCompose-blue)
+![Interfaz](https://img.shields.io/badge/Interfaz-JetpackCompose-blue)
 # Kaiju
 
 ## **Integrantes**
