@@ -1,5 +1,4 @@
 package cl.kaiju.appkaiju.model
-
 data class Producto(
     val sku: String,
     val nombre: String,
@@ -10,10 +9,10 @@ data class Producto(
     val stockMinimo: Int
 ) {
 
-    val estadoStock: String
+    val estadoStock: EstadoStock
         get() = when {
-            cantidadDisponible <= 0 -> "Producto agotado"
-            cantidadDisponible <= stockMinimo -> "Producto con pocas unidades"
-            else -> "Producto disponible"
+            cantidadDisponible <= 0 -> EstadoStock.AGOTADO
+            cantidadDisponible <= stockMinimo -> EstadoStock.BAJO
+            else -> EstadoStock.DISPONIBLE
         }
 }
