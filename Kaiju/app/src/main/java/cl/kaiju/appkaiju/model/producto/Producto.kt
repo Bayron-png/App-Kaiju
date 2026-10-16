@@ -9,10 +9,11 @@ data class Producto(
     val stockMinimo: Int
 ) {
 
-    val estadoStock: EstadoStock
+    val estadoStock: String
         get() = when {
-            cantidadDisponible <= 0 -> EstadoStock.AGOTADO
-            cantidadDisponible <= stockMinimo -> EstadoStock.BAJO
-            else -> EstadoStock.DISPONIBLE
+            cantidadDisponible <= 0 -> "Producto agotado"
+            cantidadDisponible <= stockMinimo -> "Producto con pocas unidades"
+            else -> "Producto disponible"
         }
 }
+
