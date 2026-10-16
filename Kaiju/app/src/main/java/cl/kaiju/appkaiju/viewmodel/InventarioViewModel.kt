@@ -2,7 +2,7 @@ package cl.kaiju.appkaiju.viewmodel
 
 import androidx.lifecycle.ViewModel
 import cl.kaiju.appkaiju.model.producto.Producto
-import cl.kaiju.appkaiju.repository.InventarioRepository
+import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

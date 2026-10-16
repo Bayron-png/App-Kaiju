@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.repository
+package cl.kaiju.appkaiju.repository.login
 
 import cl.kaiju.appkaiju.model.login.RolUsuario
 import cl.kaiju.appkaiju.model.login.Usuario

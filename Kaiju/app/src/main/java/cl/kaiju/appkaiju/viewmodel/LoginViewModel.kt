@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import cl.kaiju.appkaiju.model.login.EstadoLogin
 import cl.kaiju.appkaiju.model.login.RolUsuario
 import cl.kaiju.appkaiju.model.login.Usuario
-import cl.kaiju.appkaiju.repository.UsuarioRepository
+import cl.kaiju.appkaiju.repository.login.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
