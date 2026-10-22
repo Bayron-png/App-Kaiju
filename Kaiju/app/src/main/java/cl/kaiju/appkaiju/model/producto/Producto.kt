@@ -1,6 +1,11 @@
 package cl.kaiju.appkaiju.model.producto
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "productos")
 data class Producto(
-    val sku: String, // StockKeepingUnit: Código del producto
+    @PrimaryKey val sku: String, // Código del producto
     val nombre: String,
     val categoria: String,
     val precio: Double,
@@ -8,7 +13,6 @@ data class Producto(
     val stock: Int,
     val stockMinimo: Int
 ) {
-
     val estadoStock: String
         get() = when {
             cantidadDisponible <= 0 -> "Producto agotado"
@@ -16,4 +20,3 @@ data class Producto(
             else -> "Producto disponible"
         }
 }
-

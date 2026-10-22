@@ -1,0 +1,22 @@
+package cl.kaiju.appkaiju.data.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import cl.kaiju.appkaiju.model.producto.Producto
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface ProductoDao {
+
+    @Query("SELECT * FROM productos")
+    fun obtenerProductos(): Flow<List<Producto>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarProducto(producto: Producto)
+
+    @Update
+    suspend fun actualizarProducto(producto: Producto)
+}

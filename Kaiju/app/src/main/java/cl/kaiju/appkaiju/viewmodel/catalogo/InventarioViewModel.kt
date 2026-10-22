@@ -1,18 +1,25 @@
 package cl.kaiju.appkaiju.viewmodel.catalogo
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import cl.kaiju.appkaiju.model.producto.Producto
 import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class InventarioViewModel(
-    private val repository: InventarioRepository = InventarioRepository()
+    private val repository: InventarioRepository
 ) : ViewModel() {
 
-    private val _productos = MutableStateFlow<List<Producto>>(emptyList())
-    val productos: StateFlow<List<Producto>> = _productos.asStateFlow()
+    // Aquí se llama a repository.productos (esto hace que se quite el gris)
+    val productos: StateFlow<List<Producto>> = repository.productos
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     var skuSeleccionado: String = ""
         private set
@@ -21,93 +28,24 @@ class InventarioViewModel(
         skuSeleccionado = sku
     }
 
-    private val _historial = MutableStateFlow<List<String>>(emptyList())
-    val historial: StateFlow<List<String>> = _historial.asStateFlow()
-
-    init {
-        cargarProductos()
-    }
-
-    private fun cargarProductos() {
-        val listaInicial = repository.obtenerProductos()
-        _productos.value = if (listaInicial.isNotEmpty()) {
-            listaInicial
-        } else {
-            listOf(
-                Producto(
-                    sku = "SKU-101",
-                    nombre = "Polera Roja Kaiju",
-                    categoria = "Ropa",
-                    precio = 15000.0,
-                    cantidadDisponible = 18,
-                    stock = 20,
-                    stockMinimo = 5
-                ),
-                Producto(
-                    sku = "SKU-102",
-                    nombre = "Polera Azul Kaiju",
-                    categoria = "Ropa",
-                    precio = 16000.0,
-                    cantidadDisponible = 3,
-                    stock = 20,
-                    stockMinimo = 5
-                ),
-                Producto(
-                    sku = "SKU-103",
-                    nombre = "Polera Blanca Kaiju",
-                    categoria = "Ropa",
-                    precio = 17000.0,
-                    cantidadDisponible = 0,
-                    stock = 15,
-                    stockMinimo = 10
-                ),
-                Producto(
-                    sku = "SKU-104",
-                    nombre = "Polera Verde Kaiju",
-                    categoria = "Ropa",
-                    precio = 18000.0,
-                    cantidadDisponible = 12,
-                    stock = 20,
-                    stockMinimo = 4
-                ),
-                Producto(
-                    sku = "SKU-105",
-                    nombre = "Polera Morada Kaiju",
-                    categoria = "Ropa",
-                    precio = 19000.0,
-                    cantidadDisponible = 2,
-                    stock = 20,
-                    stockMinimo = 8
-                )
-            )
-        }
-    }
-
     fun registrarMovimiento(sku: String, esEntrada: Boolean, cantidad: Int) {
-        val listaActual = _productos.value.toMutableList()
-        val index = listaActual.indexOfFirst { it.sku == sku }
-
-        if (index != -1) {
-            val productoActual = listaActual[index]
-            val nuevaCantidad = if (esEntrada) {
-                productoActual.cantidadDisponible + cantidad
-            } else {
-                (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0)
+        viewModelScope.launch {
+            val productoActual = productos.value.find { it.sku == sku }
+            if (productoActual != null) {
+                val nuevaCantidad = if (esEntrada) {
+                    productoActual.cantidadDisponible + cantidad
+                } else {
+                    (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0)
+                }
+                val productoActualizado = productoActual.copy(cantidadDisponible = nuevaCantidad)
+                repository.actualizarProducto(productoActualizado) // Aquí llamas a actualizarProducto
             }
-
-            // Se crea una copia con la nueva cantidad disponible
-            listaActual[index] = productoActual.copy(cantidadDisponible = nuevaCantidad)
-            _productos.value = listaActual
-
-            val tipoMovimiento = if (esEntrada) "Entrada" else "Salida"
-            val registro = "[$tipoMovimiento] SKU: $sku - Cantidad: $cantidad (Stock actual: $nuevaCantidad)"
-            _historial.value = _historial.value + registro
         }
     }
 
     fun agregarProducto(nuevoProducto: Producto) {
-        val listaActual = _productos.value.toMutableList()
-        listaActual.add(nuevoProducto)
-        _productos.value = listaActual
+        viewModelScope.launch {
+            repository.insertarProducto(nuevoProducto) // Aquí llamas a insertarProducto
+        }
     }
 }

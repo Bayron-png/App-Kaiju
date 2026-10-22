@@ -3,13 +3,17 @@ package cl.kaiju.appkaiju
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import cl.kaiju.appkaiju.data.dao.AppDatabase
 import cl.kaiju.appkaiju.navigation.Rutas
+import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
 import cl.kaiju.appkaiju.ui.screen.alertas.PantallaAlertas
 import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaDetalleProducto
 import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaInventario
@@ -17,17 +21,32 @@ import cl.kaiju.appkaiju.ui.screen.formulario.PantallaFormularioProducto
 import cl.kaiju.appkaiju.ui.screen.login.PantallaLogin
 import cl.kaiju.appkaiju.ui.screen.movimientos.PantallaMovimiento
 import cl.kaiju.appkaiju.ui.theme.KaijuDevCatTheme
-import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
+import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val database = AppDatabase.obtenerInstancia(applicationContext)
+
+        val repository = InventarioRepository(database.productoDao())
+
+        val viewModelFactory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(InventarioViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return InventarioViewModel(repository) as T
+                }
+                throw IllegalArgumentException("Clase ViewModel desconocida")
+            }
+        }
+
         setContent {
             KaijuDevCatTheme {
                 val navController = rememberNavController()
                 val loginViewModel: LoginViewModel = viewModel()
-                val inventarioViewModel: InventarioViewModel = viewModel()
+                val inventarioViewModel: InventarioViewModel = viewModel(factory = viewModelFactory)
 
                 NavHost(
                     navController = navController,
@@ -80,7 +99,6 @@ class MainActivity : ComponentActivity() {
                         PantallaDetalleProducto(
                             skuProducto = sku,
                             inventarioViewModel = inventarioViewModel,
-
                             onVolver = { navController.popBackStack() },
                             onIrAMovimiento = { navController.navigate(Rutas.Movimiento.ruta) }
                         )
@@ -96,7 +114,7 @@ class MainActivity : ComponentActivity() {
 
                     composable(Rutas.Alertas.ruta) {
                         PantallaAlertas(
-                            inventarioViewModel = inventarioViewModel, //
+                            inventarioViewModel = inventarioViewModel,
                             onVolver = { navController.popBackStack() },
                             onSeleccionarAlerta = { sku ->
                                 navController.navigate(Rutas.DetalleProducto.crearRuta(sku))
