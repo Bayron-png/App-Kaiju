@@ -1,3 +1,4 @@
+
 package cl.kaiju.appkaiju.navigation
 
 import androidx.compose.runtime.Composable
@@ -24,10 +25,7 @@ import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
 @Composable
 fun AppNavHost() {
-    // Contexto de toda la app (vive mientras la app esta abierta)
     val context = LocalContext.current.applicationContext
-
-    // Room necesita el contexto para abrir la base de datos
     val database = AppDatabase.obtenerInstancia(context)
     val repository = InventarioRepository(database.productoDao())
 
@@ -43,18 +41,22 @@ fun AppNavHost() {
 
     val navController = rememberNavController()
     val loginViewModel: LoginViewModel = viewModel()
-    val inventarioViewModel: InventarioViewModel = viewModel(factory = viewModelFactory)
+    val inventarioViewModel: InventarioViewModel =
+        viewModel(factory = viewModelFactory)
 
     NavHost(
         navController = navController,
         startDestination = Rutas.Login.ruta
     ) {
+        // LOGIN
         composable(Rutas.Login.ruta) {
             PantallaLogin(
                 loginViewModel = loginViewModel,
                 onLoginExitoso = {
                     navController.navigate(Rutas.Inventario.ruta) {
-                        popUpTo(Rutas.Login.ruta) { inclusive = true }
+                        popUpTo(Rutas.Login.ruta) {
+                            inclusive = true
+                        }
                     }
                 },
                 onIngresarComoInvitado = {
@@ -63,6 +65,7 @@ fun AppNavHost() {
             )
         }
 
+        // CATALOGO PARA INVITADOS
         composable(Rutas.Catalogo.ruta) {
             PantallaCatalogo(
                 inventarioViewModel = inventarioViewModel,
@@ -75,66 +78,108 @@ fun AppNavHost() {
                 },
                 onIrADetalle = { sku ->
                     navController.navigate(
-                        Rutas.DetalleProducto.crearRuta(sku)
+                        Rutas.DetalleProducto.crearRuta(sku, true)
                     )
                 }
             )
         }
 
+        // INVENTARIO PARA USUARIOS CON ACCESO
         composable(Rutas.Inventario.ruta) {
             PantallaInventario(
                 inventarioViewModel = inventarioViewModel,
                 onCerrarSesion = {
                     navController.navigate(Rutas.Login.ruta) {
-                        popUpTo(Rutas.Inventario.ruta) { inclusive = true }
+                        popUpTo(Rutas.Inventario.ruta) {
+                            inclusive = true
+                        }
                     }
                 },
-                onIrAFormulario = { navController.navigate(Rutas.FormularioProducto.ruta) },
-                onIrADetalle = { sku ->
-                    navController.navigate(Rutas.DetalleProducto.crearRuta(sku))
+                onIrAFormulario = {
+                    navController.navigate(Rutas.FormularioProducto.ruta)
                 },
-                onIrAAlertas = { navController.navigate(Rutas.Alertas.ruta) }
+                onIrADetalle = { sku ->
+                    navController.navigate(
+                        Rutas.DetalleProducto.crearRuta(sku, false)
+                    )
+                },
+                onIrAAlertas = {
+                    navController.navigate(Rutas.Alertas.ruta)
+                }
             )
         }
 
+        // FORMULARIO DE PRODUCTO
         composable(Rutas.FormularioProducto.ruta) {
             PantallaFormularioProducto(
                 inventarioViewModel = inventarioViewModel,
-                onVolver = { navController.popBackStack() },
-                onGuardarExitoso = { navController.popBackStack() }
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onGuardarExitoso = {
+                    navController.popBackStack()
+                }
             )
         }
 
+        // DETALLE DEL PRODUCTO
         composable(
             route = Rutas.DetalleProducto.ruta,
-            arguments = listOf(navArgument("sku") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("sku") {
+                    type = NavType.StringType
+                },
+                navArgument("esInvitado") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
         ) { backStackEntry ->
-            val sku = backStackEntry.arguments?.getString("sku") ?: "SKU-GENERICO"
+            val sku = backStackEntry.arguments?.getString("sku")
+                ?: "SKU-GENERICO"
+
+            val esInvitado = backStackEntry.arguments
+                ?.getBoolean("esInvitado") ?: false
+
             PantallaDetalleProducto(
                 skuProducto = sku,
                 inventarioViewModel = inventarioViewModel,
-                onVolver = { navController.popBackStack() },
-                onIrAMovimiento = {
-                    navController.navigate(Rutas.Movimiento.ruta)
+                esInvitado = esInvitado,
+                onVolver = {
+                    navController.popBackStack()
                 },
-                esInvitado = true // Solo si esta ruta es para invitados
+                onIrAMovimiento = {
+                    if (!esInvitado) {
+                        navController.navigate(Rutas.Movimiento.ruta)
+                    }
+                }
             )
         }
 
+        // MOVIMIENTOS
         composable(Rutas.Movimiento.ruta) {
             PantallaMovimiento(
                 inventarioViewModel = inventarioViewModel,
-                onVolver = { navController.popBackStack() },
-                onMovimientoRegistrado = { navController.popBackStack() }
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onMovimientoRegistrado = {
+                    navController.popBackStack()
+                }
             )
         }
 
+        // ALERTAS
         composable(Rutas.Alertas.ruta) {
             PantallaAlertas(
                 inventarioViewModel,
-                onVolver = { navController.popBackStack() },
+                onVolver = {
+                    navController.popBackStack()
+                },
                 onSeleccionarAlerta = { sku ->
-                    navController.navigate(Rutas.DetalleProducto.crearRuta(sku))
+                    navController.navigate(
+                        Rutas.DetalleProducto.crearRuta(sku, false)
+                    )
                 }
             )
         }

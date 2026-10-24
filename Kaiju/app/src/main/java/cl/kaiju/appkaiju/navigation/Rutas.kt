@@ -7,8 +7,9 @@ sealed class Rutas(val ruta: String) {
     object Catalogo : Rutas("catalogo")
     object Inventario : Rutas("Inventario")
     object FormularioProducto : Rutas("formulario_producto")
-    object DetalleProducto : Rutas("detalle_producto/{sku}") {
-        fun crearRuta(sku: String) = "detalle_producto/$sku"
+    object DetalleProducto : Rutas("detalle_producto/{sku}/{esInvitado}") {
+        fun crearRuta(sku: String, esInvitado: Boolean) =
+            "detalle_producto/$sku/$esInvitado"
     }
     object Movimiento : Rutas("movimiento")
     object Alertas : Rutas("alertas")
