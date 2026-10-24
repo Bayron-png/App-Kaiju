@@ -3,8 +3,8 @@ package cl.kaiju.appkaiju.viewmodel.login
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import cl.kaiju.appkaiju.model.login.EstadoLogin
-import cl.kaiju.appkaiju.model.login.RolUsuario
-import cl.kaiju.appkaiju.model.login.Usuario
+import cl.kaiju.appkaiju.model.usuario.RolUsuario
+import cl.kaiju.appkaiju.model.usuario.Usuario
 import cl.kaiju.appkaiju.repository.login.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ class LoginViewModel(
 
     fun ingresarComoInvitado() {
         _estado.value = _estado.value.copy(
-            usuarioAutenticado = Usuario("Invitado", "invitado@kaiju.cl", "", RolUsuario.CLIENTE)
+            usuarioAutenticado = Usuario("Invitado", "invitado@kaiju.cl", "", RolUsuario.INVITADO)
         )
     }
 

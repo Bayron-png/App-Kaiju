@@ -1,14 +1,14 @@
 package cl.kaiju.appkaiju.repository.login
 
-import cl.kaiju.appkaiju.model.login.RolUsuario
-import cl.kaiju.appkaiju.model.login.Usuario
+import cl.kaiju.appkaiju.model.usuario.RolUsuario
+import cl.kaiju.appkaiju.model.usuario.Usuario
 
 class UsuarioRepository {
 
     private val usuarios = listOf(
         Usuario("Administrador", "admin@kaiju.cl", "admin123", RolUsuario.ADMINISTRADOR),
-        Usuario("Ventas", "ventas@kaiju.cl", "ventas123", RolUsuario.VENTAS),
-        Usuario("Encargado de Bodega", "stock@kaiju.cl", "stock123", RolUsuario.STOCK)
+        Usuario("Ventas", "ventas@kaiju.cl", "ventas123", RolUsuario.VENDEDOR),
+        Usuario("Encargado de Bodega", "stock@kaiju.cl", "stock123", RolUsuario.ENCARGADO_INVENTARIO)
     )
 
     fun autenticar(correo: String, contrasena: String): Usuario? {

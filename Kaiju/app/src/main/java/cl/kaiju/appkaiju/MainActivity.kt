@@ -15,8 +15,9 @@ import cl.kaiju.appkaiju.data.dao.AppDatabase
 import cl.kaiju.appkaiju.navigation.Rutas
 import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
 import cl.kaiju.appkaiju.ui.screen.alertas.PantallaAlertas
-import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaDetalleProducto
-import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaInventario
+import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaCatalogo
+import cl.kaiju.appkaiju.ui.screen.inventario.PantallaDetalleProducto
+import cl.kaiju.appkaiju.ui.screen.inventario.PantallaInventario
 import cl.kaiju.appkaiju.ui.screen.formulario.PantallaFormularioProducto
 import cl.kaiju.appkaiju.ui.screen.login.PantallaLogin
 import cl.kaiju.appkaiju.ui.screen.movimientos.PantallaMovimiento
@@ -55,20 +56,34 @@ class MainActivity : ComponentActivity() {
                     composable(Rutas.Login.ruta) {
                         PantallaLogin(
                             loginViewModel = loginViewModel,
+
                             onLoginExitoso = {
-                                navController.navigate(Rutas.Catalogo.ruta) {
+                                navController.navigate(Rutas.Inventario.ruta) {
                                     popUpTo(Rutas.Login.ruta) { inclusive = true }
                                 }
+                            },
+
+                            onIngresarComoInvitado = {
+                                navController.navigate(Rutas.Catalogo.ruta)
                             }
                         )
                     }
 
-                    composable(Rutas.Catalogo.ruta) {
+                    composable(Rutas.Catalogo.ruta ){
+                        PantallaCatalogo(
+                            onVolver = {
+                                navController.popBackStack()
+                            }
+                        )
+
+                    }
+
+                    composable(Rutas.Inventario.ruta) {
                         PantallaInventario(
                             inventarioViewModel = inventarioViewModel,
                             onCerrarSesion = {
                                 navController.navigate(Rutas.Login.ruta) {
-                                    popUpTo(Rutas.Catalogo.ruta) { inclusive = true }
+                                    popUpTo(Rutas.Inventario.ruta) { inclusive = true }
                                 }
                             },
                             onIrAFormulario = { navController.navigate(Rutas.FormularioProducto.ruta) },

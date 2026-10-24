@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.ui.screen.catalogo
+package cl.kaiju.appkaiju.ui.screen.inventario
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

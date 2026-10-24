@@ -1,4 +1,4 @@
-package cl.kaiju.appkaiju.ui.screen.catalogo
+package cl.kaiju.appkaiju.ui.screen.inventario
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -41,7 +41,7 @@ fun PantallaInventario(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Kaiju - Catálogo de Inventario") },
+                title = { Text("Kaiju - Inventario") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary

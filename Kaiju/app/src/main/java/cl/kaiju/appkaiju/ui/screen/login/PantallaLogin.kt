@@ -32,7 +32,8 @@ import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
 fun PantallaLogin(
     loginViewModel: LoginViewModel = viewModel(),
-    onLoginExitoso: () -> Unit = {}
+    onLoginExitoso: () -> Unit = {},
+    onIngresarComoInvitado: () -> Unit = {}
 ) {
     val estado by loginViewModel.estado.collectAsState()
 
@@ -101,7 +102,7 @@ fun PantallaLogin(
         TextButton(
             onClick = {
                 loginViewModel.ingresarComoInvitado()
-                onLoginExitoso()
+                onIngresarComoInvitado()
             }
         ) {
             Text("Continuar como Invitado")

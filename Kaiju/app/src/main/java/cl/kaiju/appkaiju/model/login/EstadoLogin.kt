@@ -1,5 +1,7 @@
 package cl.kaiju.appkaiju.model.login
 
+import cl.kaiju.appkaiju.model.usuario.Usuario
+
 data class EstadoLogin(
     val correo: String = "",
     val errorCorreo: String? = null,
