@@ -2,22 +2,20 @@
 package cl.kaiju.appkaiju.ui.screen.inventario
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.remember
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,18 +26,24 @@ fun PantallaDetalleProducto(
     onIrAMovimiento: () -> Unit,
     esInvitado: Boolean = false
 ) {
-    // Obtener los productos reales desde el ViewModel
     val productos by inventarioViewModel.productos.collectAsState()
 
     val movimientosFlow = remember(skuProducto) {
-        inventarioViewModel.obtenerMovimientosPorProducto(skuProducto.orEmpty())
+        inventarioViewModel.obtenerMovimientosPorProducto(
+            skuProducto.orEmpty()
+        )
     }
 
-    val movimientos by movimientosFlow.collectAsState(initial = emptyList())
+    val movimientos by movimientosFlow.collectAsState(
+        initial = emptyList()
+    )
 
-    // Buscar el producto seleccionado mediante su SKU
     val producto = productos.firstOrNull {
         it.sku == skuProducto
+    }
+
+    var mostrarDialogoEliminar by remember {
+        mutableStateOf(false)
     }
 
     Scaffold(
@@ -54,6 +58,21 @@ fun PantallaDetalleProducto(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver"
                         )
+                    }
+                },
+                actions = {
+                    if (!esInvitado && producto != null) {
+                        IconButton(
+                            onClick = {
+                                mostrarDialogoEliminar = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Eliminar producto",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )
@@ -86,11 +105,13 @@ fun PantallaDetalleProducto(
 
                         HorizontalDivider()
 
-
                         Text("SKU: ${producto.sku}")
                         Text("Categoría: ${producto.categoria}")
                         Text("Precio: $${producto.precio.toInt()}")
-                        Text("Cantidad disponible: ${producto.cantidadDisponible} unidades")
+                        Text(
+                            "Cantidad disponible: " +
+                                    "${producto.cantidadDisponible} unidades"
+                        )
 
                         if (!esInvitado) {
                             Text("Stock registrado: ${producto.stock} unidades")
@@ -111,7 +132,9 @@ fun PantallaDetalleProducto(
                     )
 
                     if (movimientos.isEmpty()) {
-                        Text("Este producto todavía no tiene movimientos registrados.")
+                        Text(
+                            "Este producto todavía no tiene movimientos registrados."
+                        )
                     } else {
                         LazyColumn(
                             modifier = Modifier
@@ -137,7 +160,8 @@ fun PantallaDetalleProducto(
                                         }
 
                                         Text(
-                                            text = "${movimiento.tipo}: $signo${movimiento.cantidad} unidades",
+                                            text = "${movimiento.tipo}: " +
+                                                    "$signo${movimiento.cantidad} unidades",
                                             style = MaterialTheme.typography.titleSmall
                                         )
 
@@ -155,7 +179,6 @@ fun PantallaDetalleProducto(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
 
                     Button(
                         onClick = {
@@ -169,5 +192,46 @@ fun PantallaDetalleProducto(
                 }
             }
         }
+    }
+
+    if (mostrarDialogoEliminar && producto != null) {
+        AlertDialog(
+            onDismissRequest = {
+                mostrarDialogoEliminar = false
+            },
+            title = {
+                Text("Eliminar producto")
+            },
+            text = {
+                Text(
+                    "¿Estás seguro de que deseas eliminar " +
+                            "\"${producto.nombre}\"? Esta acción no se puede deshacer."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        inventarioViewModel.eliminarProducto(producto.sku) {
+                            mostrarDialogoEliminar = false
+                            onVolver()
+                        }
+                    }
+                ) {
+                    Text(
+                        "Eliminar",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogoEliminar = false
+                    }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

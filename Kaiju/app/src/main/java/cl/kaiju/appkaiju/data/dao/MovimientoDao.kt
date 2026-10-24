@@ -18,4 +18,7 @@ interface MovimientoDao {
         ORDER BY fecha DESC
     """)
     fun obtenerMovimientosPorProducto(sku: String): Flow<List<Movimiento>>
+
+    @Query("DELETE FROM movimientos WHERE skuProducto = :sku")
+    suspend fun eliminarMovimientosPorProducto(sku: String)
 }

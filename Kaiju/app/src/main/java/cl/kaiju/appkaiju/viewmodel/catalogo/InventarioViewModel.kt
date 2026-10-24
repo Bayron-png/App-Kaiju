@@ -79,4 +79,14 @@ class InventarioViewModel(
             repository.insertarProducto(nuevoProducto)
         }
     }
+
+    fun eliminarProducto(
+        sku: String,
+        onCompletado: () -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.eliminarProducto(sku)
+            onCompletado()
+        }
+    }
 }

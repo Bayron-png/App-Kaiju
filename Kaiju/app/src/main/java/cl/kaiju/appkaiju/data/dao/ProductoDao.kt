@@ -19,4 +19,7 @@ interface ProductoDao {
 
     @Update
     suspend fun actualizarProducto(producto: Producto)
+
+    @Query("DELETE FROM productos WHERE sku = :sku")
+    suspend fun eliminarProducto(sku: String)
 }

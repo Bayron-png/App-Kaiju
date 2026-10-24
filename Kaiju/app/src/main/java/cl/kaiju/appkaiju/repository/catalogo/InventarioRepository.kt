@@ -98,6 +98,11 @@ class InventarioRepository(
         movimientoDao.insertarMovimiento(movimiento)
     }
 
+    suspend fun eliminarProducto(sku: String) {
+        movimientoDao.eliminarMovimientosPorProducto(sku)
+        productoDao.eliminarProducto(sku)
+    }
+
     fun obtenerMovimientosPorProducto(sku: String): Flow<List<Movimiento>> {
         return movimientoDao.obtenerMovimientosPorProducto(sku)
     }
