@@ -12,9 +12,13 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.kaiju.appkaiju.model.producto.Producto
+import cl.kaiju.appkaiju.ui.theme.Header
+import cl.kaiju.appkaiju.ui.theme.TextoHeader
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,10 +45,17 @@ fun PantallaInventario(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Kaiju - Inventario") },
+                title = {
+                    Text(
+                        text = "Kaiju - Inventario",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.3.sp
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = Header,
+                    titleContentColor = TextoHeader
                 )
             )
         },

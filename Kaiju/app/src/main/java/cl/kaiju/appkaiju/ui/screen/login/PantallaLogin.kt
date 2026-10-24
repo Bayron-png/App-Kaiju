@@ -1,5 +1,7 @@
 package cl.kaiju.appkaiju.ui.screen.login
 
+import androidx.compose.material3.ButtonDefaults
+import cl.kaiju.appkaiju.ui.theme.Primario
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.kaiju.appkaiju.ui.theme.Secundario
 import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
 @Composable
@@ -65,7 +68,7 @@ fun PantallaLogin(
         Text(
             text = "Kaiju Store",
             style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary,
+            color = Primario,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -135,10 +138,13 @@ fun PantallaLogin(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { intentarLogin() }, // Misma funcion que el enter
+            onClick = { intentarLogin() },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primario
+            )
         ) {
             Text("Ingresar")
         }
@@ -151,7 +157,10 @@ fun PantallaLogin(
                 onIngresarComoInvitado()
             }
         ) {
-            Text("Continuar como Invitado")
+            Text(
+                text = "Continuar como Invitado",
+                color = Secundario
+            )
         }
 
     }
