@@ -24,44 +24,61 @@ class LoginViewModel(
     }
 
     fun onCorreoChange(nuevoCorreo: String) {
+
+        val limpio = nuevoCorreo
+            // elimina espacios, tabs y saltos de linea
+            .filterNot { it.isWhitespace() }
+            // corta a un maximo de 60 caracteres
+            .take(60)
+
         _estado.value = _estado.value.copy(
-            correo = nuevoCorreo,
-            errorCorreo = null
+            correo = limpio,
+            // Al escribir, se quita el error de formato
+            errorCorreo = null,
+            // y el error de credenciales
+            errorCredenciales = null
         )
     }
 
     fun onContrasenaChange(nuevaContrasena: String) {
+        val limpio = nuevaContrasena
+            // solo quita saltos de linea, no espacios
+            .filterNot { it == '\n' || it == '\r' }
+            // maximo de 40 caracteres
+            .take(40)
+
         _estado.value = _estado.value.copy(
-            contrasena = nuevaContrasena,
-            errorContrasena = null
+            contrasena = limpio,
+            errorContrasena = null,
+            errorCredenciales = null
         )
     }
 
     fun iniciarSesion(): Boolean {
+        // Valida el formato, si falla, no consulta al repositorio
         if (!validarFormulario()) return false
 
         val correo = _estado.value.correo
         val contrasena = _estado.value.contrasena
 
+        // Devuelve el usuario si coinciden correo y contraseña o null si no
         val usuario = usuarioRepository.autenticar(correo, contrasena)
 
         return if (usuario != null) {
+            // Exito: guarda el usuario (con su rol) y limpia todos los errores
             _estado.value = _estado.value.copy(
                 usuarioAutenticado = usuario,
                 errorCorreo = null,
-                errorContrasena = null
+                errorContrasena = null,
+                errorCredenciales = null
             )
             true
         } else {
-            if (usuarioRepository.existeCorreo(correo)) {
-                _estado.value = _estado.value.copy(
-                    errorContrasena = "Contraseña incorrecta"
-                )
-            } else {
-                _estado.value = _estado.value.copy(
-                    errorCorreo = "Usuario no registrado"
-                )
-            }
+            // Fallo: un solo error generico que pinta ambos campos en rojo,
+            // sin mostrar cual de los dos datos estaba mal
+            _estado.value = _estado.value.copy(
+                errorCredenciales = "Correo o contraseña incorrectos"
+            )
             false
         }
     }
@@ -72,27 +89,28 @@ class LoginViewModel(
         var errCorreo: String? = null
         var errContrasena: String? = null
 
+        // Correo: valida que no este vacio y tenga un formato valido
         if (actual.correo.isBlank()) {
-            errCorreo = "El correo es obligatorio"
+            errCorreo = "Ingrese su correo"
             esValido = false
         } else if (!Patterns.EMAIL_ADDRESS.matcher(actual.correo).matches()) {
             errCorreo = "Ingrese un correo válido"
             esValido = false
         }
 
+        // Contraseña: solo comprueba que no este vacio.
+        // habia un largo minimo pero eso va en el registro, no aqui
         if (actual.contrasena.isBlank()) {
-            errContrasena = "La contraseña no puede estar vacía"
-            esValido = false
-        } else if (actual.contrasena.length < 6) {
-            errContrasena = "Debe tener al menos 6 caracteres"
+            errContrasena = "Ingrese su contraseña"
             esValido = false
         }
 
+        // Guarda los errores en el estado para que la pantalla los muestre
         _estado.value = actual.copy(
             errorCorreo = errCorreo,
             errorContrasena = errContrasena
         )
 
-        return esValido
+        return esValido // true = el formulario esta bien
     }
 }

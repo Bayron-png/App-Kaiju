@@ -7,5 +7,6 @@ data class EstadoLogin(
     val errorCorreo: String? = null,
     val contrasena: String = "",
     val errorContrasena: String? = null,
+    val errorCredenciales: String? = null,
     val usuarioAutenticado: Usuario? = null // Almacena el rol del usuario
 )

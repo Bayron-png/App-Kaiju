@@ -7,11 +7,14 @@ import androidx.room.PrimaryKey
 data class Producto(
     @PrimaryKey val sku: String, // Código del producto
     val nombre: String,
+    //val descripcion: String,
     val categoria: String,
+    //val tipo: String,
     val precio: Double,
-    val cantidadDisponible: Int,
-    val stock: Int,
+    val cantidadDisponible: Int, // eliminar
+    val stock: Int, // change for -> stockActual
     val stockMinimo: Int
+    //val detalle: String -> texto opcional para talla, color, lote o fecha de vencimiento
 ) {
     val estadoStock: String
         get() = when {
