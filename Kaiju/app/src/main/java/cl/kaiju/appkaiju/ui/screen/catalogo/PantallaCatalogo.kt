@@ -1,6 +1,13 @@
 package cl.kaiju.appkaiju.ui.screen.catalogo
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import cl.kaiju.appkaiju.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
@@ -15,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import cl.kaiju.appkaiju.ui.theme.Header
 import cl.kaiju.appkaiju.ui.theme.TextoHeader
 
@@ -41,12 +50,24 @@ fun PantallaCatalogo(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Kaiju - Nuestro catálogo",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.3.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.icono_kaiju),
+                            contentDescription = "Logo de Kaiju Store",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(end = 10.dp)
+                        )
+
+                        Text(
+                            text = "Kaiju - Nuestro catálogo",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.3.sp
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Header,

@@ -2,6 +2,7 @@ package cl.kaiju.appkaiju.ui.screen.login
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import cl.kaiju.appkaiju.R
@@ -37,6 +38,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.kaiju.appkaiju.ui.theme.Blanco
+import cl.kaiju.appkaiju.ui.theme.FondoLogin
 import cl.kaiju.appkaiju.ui.theme.Secundario
 import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
@@ -66,6 +69,7 @@ fun PantallaLogin(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(FondoLogin)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -88,6 +92,7 @@ fun PantallaLogin(
 
         Text(
             text = "Iniciar Sesión",
+            color = Blanco,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )

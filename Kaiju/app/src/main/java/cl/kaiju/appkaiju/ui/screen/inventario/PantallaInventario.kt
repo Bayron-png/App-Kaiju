@@ -2,6 +2,10 @@ package cl.kaiju.appkaiju.ui.screen.inventario
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import cl.kaiju.appkaiju.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -46,12 +50,25 @@ fun PantallaInventario(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Kaiju - Inventario",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.3.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.icono_kaiju),
+                            contentDescription = "Logo de Kaiju Store",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(end = 10.dp)
+                        )
+
+                        Text(
+                            text = "Kaiju - Inventario",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.3.sp,
+                            color = TextoHeader
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Header,
