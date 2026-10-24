@@ -1,13 +1,14 @@
 ![Lenguaje](https://img.shields.io/badge/Lenguaje-Kotlin-purple)
 ![Interfaz](https://img.shields.io/badge/Interfaz-JetpackCompose-blue)
-# Kaiju
+# App Kaiju
 
-## **Integrantes**
-| Nombre del Equipo| Nombres          | Apellidos       |
-|------------------| ---------------- | --------------- |
-| DevCat           | Luis Antonio     | Álvarez Requejo |
-| DevCat           | Mario Ignacio    | Andrade Salinas |
-| DevCat           | Bayron Alexander | Urrutia Flores  |
+## Integrantes participantes
+
+| Nombre completo                 | Correo                 |
+| ------------------------------- | ---------------------- |
+| Luis Antonio Álvarez Requejo    | luis.alvarez@duocuc.cl |
+| Mario Ignacio Andrade Salinas   | mar.andrades@duocuc.cl |
+| Bayron Alexander Urrutia Flores | bay.urrutia@duocuc.cl  |
 
 ## **Caso**
 El caso de la tienda Kaiju solicita desarrollar un Producto Mínimo Viable (MVP) para una aplicación móvil Android. Su principal objetivo es automatizar y optimizar el registro, la trazabilidad y la gestión del inventario y ventas, reemplazando el control manual actual por uno actualizado en tiempo real.
