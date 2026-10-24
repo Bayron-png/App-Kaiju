@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cl.kaiju.appkaiju.R
+import cl.kaiju.appkaiju.ui.screen.inventario.formatearPrecio
 import cl.kaiju.appkaiju.ui.theme.Header
 import cl.kaiju.appkaiju.ui.theme.TextoHeader
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
@@ -152,7 +153,7 @@ fun PantallaCatalogo(
                         )
 
                         Text(
-                            text = "Precio: $${producto.precio.toInt()}",
+                            text = "Precio: $${formatearPrecio(producto.precio)}",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }

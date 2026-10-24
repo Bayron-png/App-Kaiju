@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -107,7 +108,7 @@ fun PantallaDetalleProducto(
 
                         Text("SKU: ${producto.sku}")
                         Text("Categoría: ${producto.categoria}")
-                        Text("Precio: $${producto.precio.toInt()}")
+                        Text("Precio: $${formatearPrecio(producto.precio)}")
                         Text(
                             "Cantidad disponible: " +
                                     "${producto.cantidadDisponible} unidades"
@@ -234,4 +235,8 @@ fun PantallaDetalleProducto(
             }
         )
     }
+}
+fun formatearPrecio(precio: Double): String {
+    val formato = NumberFormat.getIntegerInstance(Locale("es", "CL"))
+    return formato.format(precio)
 }
