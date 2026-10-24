@@ -1,6 +1,11 @@
 package cl.kaiju.appkaiju.ui.screen.login
 
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import cl.kaiju.appkaiju.R
+import androidx.compose.foundation.layout.size
 import cl.kaiju.appkaiju.ui.theme.Primario
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.focus.FocusDirection
@@ -65,6 +70,15 @@ fun PantallaLogin(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.icono_kaiju),
+            contentDescription = "Logo de Kaiju Store",
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 12.dp),
+            contentScale = ContentScale.Fit
+        )
+
         Text(
             text = "Kaiju Store",
             style = MaterialTheme.typography.headlineLarge,
