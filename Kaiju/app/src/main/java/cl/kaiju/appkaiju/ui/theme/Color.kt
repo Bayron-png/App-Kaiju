@@ -8,7 +8,6 @@ val Header = Color(0xFF0079C9)
 val TextoHeader = Color(0xFFD3DCFF)
 val Pink80 = Color(0xFFEFB8C8)
 
-val Purple40 = Color(0xFF191A1C)
 val PurpleGrey40 = Color(0xFF501DBE)
 val Pink40 = Color(0xFF7D5260)
 
