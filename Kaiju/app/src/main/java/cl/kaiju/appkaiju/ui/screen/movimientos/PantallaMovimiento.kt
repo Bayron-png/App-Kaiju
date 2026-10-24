@@ -85,14 +85,19 @@ fun PantallaMovimiento(
 
             Button(
                 onClick = {
-                    val cantidadInt = cantidad.toIntOrNull() ?: 0
-                    if (cantidadInt > 0) {
-                        val esEntrada = tipoMovimiento == "Entrada"
+                    val cantidadInt = cantidad.toIntOrNull()
 
+                    if (
+                        skuActual.isNotBlank() &&
+                        cantidadInt != null &&
+                        cantidadInt > 0 &&
+                        motivo.isNotBlank()
+                    ) {
                         inventarioViewModel.registrarMovimiento(
                             sku = skuActual,
-                            esEntrada = esEntrada,
-                            cantidad = cantidadInt
+                            tipo = tipoMovimiento,
+                            cantidad = cantidadInt,
+                            motivo = motivo
                         )
 
                         onMovimientoRegistrado()

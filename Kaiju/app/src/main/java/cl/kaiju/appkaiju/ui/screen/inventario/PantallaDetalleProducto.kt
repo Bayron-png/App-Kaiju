@@ -3,6 +3,12 @@ package cl.kaiju.appkaiju.ui.screen.inventario
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.remember
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,6 +30,12 @@ fun PantallaDetalleProducto(
 ) {
     // Obtener los productos reales desde el ViewModel
     val productos by inventarioViewModel.productos.collectAsState()
+
+    val movimientosFlow = remember(skuProducto) {
+        inventarioViewModel.obtenerMovimientosPorProducto(skuProducto.orEmpty())
+    }
+
+    val movimientos by movimientosFlow.collectAsState(initial = emptyList())
 
     // Buscar el producto seleccionado mediante su SKU
     val producto = productos.firstOrNull {
@@ -94,16 +106,55 @@ fun PantallaDetalleProducto(
 
                 if (!esInvitado) {
                     Text(
-                        text = "Historial de movimientos recientes (RF-04):",
+                        text = "Historial de movimientos",
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    // El historial real se debe conectar a los movimientos
-                    // guardados en la base de datos.
-                    Text(
-                        "El historial de movimientos aún no está conectado."
-                    )
+                    if (movimientos.isEmpty()) {
+                        Text("Este producto todavía no tiene movimientos registrados.")
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                items = movimientos,
+                                key = { it.id }
+                            ) { movimiento ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        val signo = when (movimiento.tipo) {
+                                            "Entrada" -> "+"
+                                            "Salida" -> "-"
+                                            else -> ""
+                                        }
 
+                                        Text(
+                                            text = "${movimiento.tipo}: $signo${movimiento.cantidad} unidades",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+
+                                        Text("Motivo: ${movimiento.motivo}")
+
+                                        Text(
+                                            text = SimpleDateFormat(
+                                                "dd/MM/yyyy HH:mm",
+                                                Locale.getDefault()
+                                            ).format(Date(movimiento.fecha)),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                     Spacer(modifier = Modifier.weight(1f))
 
                     Button(

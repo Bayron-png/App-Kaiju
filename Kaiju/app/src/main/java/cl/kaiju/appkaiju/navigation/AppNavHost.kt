@@ -27,7 +27,7 @@ import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 fun AppNavHost() {
     val context = LocalContext.current.applicationContext
     val database = AppDatabase.obtenerInstancia(context)
-    val repository = InventarioRepository(database.productoDao())
+    val repository = InventarioRepository(productoDao = database.productoDao(), movimientoDao = database.movimientoDao())
 
     val viewModelFactory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
