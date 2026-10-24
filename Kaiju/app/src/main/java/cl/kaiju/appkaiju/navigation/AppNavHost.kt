@@ -114,7 +114,10 @@ fun AppNavHost() {
                 skuProducto = sku,
                 inventarioViewModel = inventarioViewModel,
                 onVolver = { navController.popBackStack() },
-                onIrAMovimiento = { navController.navigate(Rutas.Movimiento.ruta) }
+                onIrAMovimiento = {
+                    navController.navigate(Rutas.Movimiento.ruta)
+                },
+                esInvitado = true // Solo si esta ruta es para invitados
             )
         }
 
