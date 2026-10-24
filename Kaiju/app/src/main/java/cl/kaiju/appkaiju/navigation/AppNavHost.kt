@@ -65,8 +65,18 @@ fun AppNavHost() {
 
         composable(Rutas.Catalogo.ruta) {
             PantallaCatalogo(
+                inventarioViewModel = inventarioViewModel,
                 onVolver = {
-                    navController.popBackStack()
+                    navController.navigate(Rutas.Login.ruta) {
+                        popUpTo(Rutas.Catalogo.ruta) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onIrADetalle = { sku ->
+                    navController.navigate(
+                        Rutas.DetalleProducto.crearRuta(sku)
+                    )
                 }
             )
         }
