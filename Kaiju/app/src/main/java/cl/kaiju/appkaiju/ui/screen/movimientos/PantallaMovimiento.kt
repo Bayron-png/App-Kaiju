@@ -20,17 +20,28 @@ fun PantallaMovimiento(
     var tipoMovimiento by remember { mutableStateOf("Entrada") }
     var cantidad by remember { mutableStateOf("") }
     var motivo by remember { mutableStateOf("") }
+    var errorMovimiento by remember { mutableStateOf<String?>(null) }
+
     val skuActual = inventarioViewModel.skuSeleccionado
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(if (skuActual.isNotEmpty()) "Movimiento ($skuActual)" else "Registrar Movimiento")
+                    Text(
+                        text = if (skuActual.isNotEmpty()) {
+                            "Movimiento ($skuActual)"
+                        } else {
+                            "Registrar Movimiento"
+                        }
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onVolver) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
                     }
                 }
             )
@@ -43,43 +54,91 @@ fun PantallaMovimiento(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Tipo de Movimiento:", style = MaterialTheme.typography.titleMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = "Tipo de Movimiento:",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Button(
-                    onClick = { tipoMovimiento = "Entrada" },
+                    onClick = {
+                        tipoMovimiento = "Entrada"
+                        errorMovimiento = null
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (tipoMovimiento == "Entrada") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        containerColor = if (tipoMovimiento == "Entrada") {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        }
                     )
-                ) { Text("Entrada") }
+                ) {
+                    Text("Entrada")
+                }
 
                 Button(
-                    onClick = { tipoMovimiento = "Salida" },
+                    onClick = {
+                        tipoMovimiento = "Salida"
+                        errorMovimiento = null
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (tipoMovimiento == "Salida") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        containerColor = if (tipoMovimiento == "Salida") {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        }
                     )
-                ) { Text("Salida") }
+                ) {
+                    Text("Salida")
+                }
 
                 Button(
-                    onClick = { tipoMovimiento = "Ajuste" },
+                    onClick = {
+                        tipoMovimiento = "Ajuste"
+                        errorMovimiento = null
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (tipoMovimiento == "Ajuste") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        containerColor = if (tipoMovimiento == "Ajuste") {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        }
                     )
-                ) { Text("Ajuste") }
+                ) {
+                    Text("Ajuste")
+                }
             }
 
             OutlinedTextField(
                 value = cantidad,
-                onValueChange = { cantidad = it },
+                onValueChange = {
+                    cantidad = it
+                    errorMovimiento = null
+                },
                 label = { Text("Cantidad") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             OutlinedTextField(
                 value = motivo,
-                onValueChange = { motivo = it },
+                onValueChange = {
+                    motivo = it
+                    errorMovimiento = null
+                },
                 label = { Text("Motivo / Observación") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            errorMovimiento?.let { mensaje ->
+                Text(
+                    text = mensaje,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -87,17 +146,33 @@ fun PantallaMovimiento(
                 onClick = {
                     val cantidadInt = cantidad.toIntOrNull()
 
-                    if (
-                        skuActual.isNotBlank() &&
-                        cantidadInt != null &&
-                        cantidadInt > 0 &&
-                        motivo.isNotBlank()
-                    ) {
+                    errorMovimiento = when {
+                        skuActual.isBlank() ->
+                            "No hay un producto seleccionado."
+
+                        cantidadInt == null || cantidadInt <= 0 ->
+                            "Ingresa una cantidad válida mayor que cero."
+
+                        motivo.isBlank() ->
+                            "Ingresa el motivo del movimiento."
+
+                        tipoMovimiento == "Salida" &&
+                                cantidadInt > (
+                                inventarioViewModel.productos.value
+                                    .firstOrNull { it.sku == skuActual }
+                                    ?.cantidadDisponible ?: 0
+                                ) ->
+                            "No hay suficiente stock para realizar esta salida."
+
+                        else -> null
+                    }
+
+                    if (errorMovimiento == null) {
                         inventarioViewModel.registrarMovimiento(
                             sku = skuActual,
                             tipo = tipoMovimiento,
-                            cantidad = cantidadInt,
-                            motivo = motivo
+                            cantidad = cantidadInt!!,
+                            motivo = motivo.trim()
                         )
 
                         onMovimientoRegistrado()

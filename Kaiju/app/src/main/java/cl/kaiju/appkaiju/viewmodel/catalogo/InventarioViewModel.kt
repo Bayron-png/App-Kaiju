@@ -74,9 +74,20 @@ class InventarioViewModel(
         }
     }
 
-    fun agregarProducto(nuevoProducto: Producto) {
-        viewModelScope.launch {
-            repository.insertarProducto(nuevoProducto)
+    suspend fun agregarProducto(nuevoProducto: Producto): Boolean {
+        val sku = nuevoProducto.sku.trim()
+
+        if (sku.isBlank() || repository.existeSku(sku)) {
+            return false
+        }
+
+        return try {
+            repository.insertarProducto(
+                nuevoProducto.copy(sku = sku)
+            )
+            true
+        } catch (e: android.database.sqlite.SQLiteConstraintException) {
+            false
         }
     }
 

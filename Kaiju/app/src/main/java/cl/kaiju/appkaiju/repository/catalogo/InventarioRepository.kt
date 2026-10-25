@@ -103,6 +103,10 @@ class InventarioRepository(
         productoDao.eliminarProducto(sku)
     }
 
+    suspend fun existeSku(sku: String): Boolean {
+        return productoDao.existeSku(sku.trim())
+    }
+
     fun obtenerMovimientosPorProducto(sku: String): Flow<List<Movimiento>> {
         return movimientoDao.obtenerMovimientosPorProducto(sku)
     }
