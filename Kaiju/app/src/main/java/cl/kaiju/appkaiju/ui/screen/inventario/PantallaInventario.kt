@@ -2,38 +2,33 @@ package cl.kaiju.appkaiju.ui.screen.inventario
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.Image
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
-import cl.kaiju.appkaiju.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.kaiju.appkaiju.model.producto.Producto
-import cl.kaiju.appkaiju.ui.theme.Header
-import cl.kaiju.appkaiju.ui.theme.TextoHeader
+import cl.kaiju.appkaiju.model.usuario.RolUsuario
+import cl.kaiju.appkaiju.navigation.Rutas
+import cl.kaiju.appkaiju.ui.components.navegacion.PlantillaPantallaRol
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
 fun PantallaInventario(
+    rol: RolUsuario,
     inventarioViewModel: InventarioViewModel = viewModel(),
+    onNavegar: (String) -> Unit = {},
     onCerrarSesion: () -> Unit = {},
     onIrAFormulario: () -> Unit = {},
     onIrADetalle: (String) -> Unit = {},
-    onIrAAlertas: () -> Unit = {}
+    onIrARegistrarVenta: () -> Unit = {}
 ) {
     val productosState by inventarioViewModel.productos.collectAsState()
 
@@ -46,63 +41,21 @@ fun PantallaInventario(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.icono_kaiju),
-                            contentDescription = "Logo de Kaiju Store",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .padding(end = 10.dp)
-                        )
-
-                        Text(
-                            text = "Kaiju - Inventario",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 0.3.sp,
-                            color = TextoHeader
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Header,
-                    titleContentColor = TextoHeader
-                )
-            )
-        },
-
+    PlantillaPantallaRol(
+        titulo = "Kaiju - Inventario",
+        rol = rol,
+        rutaActual = Rutas.Inventario.ruta,
+        onNavegar = onNavegar,
+        onCerrarSesion = onCerrarSesion,
         floatingActionButton = {
-            FloatingActionButton(onClick = { onIrAFormulario() }) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar Producto")
-            }
-        },
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Ya estás aquí */ },
-                    icon = { Icon(Icons.Default.Inventory, contentDescription = "Catálogo") },
-                    label = { Text("Catálogo") }
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { onIrAAlertas() },
-                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Alertas") },
-                    label = { Text("Alertas") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { onCerrarSesion() },
-                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Salir") },
-                    label = { Text("Salir") }
-                )
+            if (rol.puedeModificarInventario) {
+                FloatingActionButton( onClick = {onIrAFormulario()} ) {
+                    Icon(Icons.Default.Add, contentDescription = "Agregar Producto")
+                }
+            } else if (rol == RolUsuario.VENDEDOR) {
+                FloatingActionButton(onClick = { onIrARegistrarVenta()} ) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = "Registrar venta")
+                }
             }
         }
     ) { padding ->

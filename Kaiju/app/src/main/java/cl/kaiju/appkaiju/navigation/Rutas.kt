@@ -5,12 +5,15 @@ sealed class Rutas(val ruta: String) {
 
     // Ruta de catalogo de productos
     object Catalogo : Rutas("catalogo")
-    object Inventario : Rutas("Inventario")
+    object Inventario : Rutas("inventario")
     object FormularioProducto : Rutas("formulario_producto")
     object DetalleProducto : Rutas("detalle_producto/{sku}/{esInvitado}") {
         fun crearRuta(sku: String, esInvitado: Boolean) =
             "detalle_producto/$sku/$esInvitado"
     }
+
+    object RegistrarVenta : Rutas("registrar_venta")
+
     object Movimiento : Rutas("movimiento")
     object Alertas : Rutas("alertas")
 }

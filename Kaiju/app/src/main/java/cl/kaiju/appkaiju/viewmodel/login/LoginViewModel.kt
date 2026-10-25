@@ -54,9 +54,13 @@ class LoginViewModel(
         )
     }
 
+    fun cerrarSesion() {
+        _estado.value = EstadoLogin()
+    }
+
     fun iniciarSesion(): Boolean {
         // Valida el formato, si falla, no consulta al repositorio
-        if (!validarFormulario()) return false
+        if (!validarFormularioLogin()) return false
 
         val correo = _estado.value.correo
         val contrasena = _estado.value.contrasena
@@ -83,7 +87,7 @@ class LoginViewModel(
         }
     }
 
-    private fun validarFormulario(): Boolean {
+    private fun validarFormularioLogin(): Boolean {
         val actual = _estado.value
         var esValido = true
         var errCorreo: String? = null

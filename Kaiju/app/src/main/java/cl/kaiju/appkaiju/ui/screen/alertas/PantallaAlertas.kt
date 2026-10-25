@@ -13,13 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.kaiju.appkaiju.model.usuario.RolUsuario
+import cl.kaiju.appkaiju.navigation.Rutas
+import cl.kaiju.appkaiju.ui.components.navegacion.PlantillaPantallaRol
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaAlertas(
+    rol: RolUsuario,
     inventarioViewModel: InventarioViewModel = viewModel(),
-    onVolver: () -> Unit = {},
+    onNavegar: (String) -> Unit = {},
+    onCerrarSesion: () -> Unit = {},
     onSeleccionarAlerta: (String) -> Unit = {}
 ) {
     val productosState by inventarioViewModel.productos.collectAsState()
@@ -28,17 +33,12 @@ fun PantallaAlertas(
         productosState.filter { it.cantidadDisponible <= it.stockMinimo }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Alertas de Stock") },
-                navigationIcon = {
-                    IconButton(onClick = { onVolver() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-                    }
-                }
-            )
-        }
+    PlantillaPantallaRol(
+        titulo = "Alertas de stock",
+        rol = rol,
+        rutaActual = Rutas.Alertas.ruta,
+        onNavegar = onNavegar,
+        onCerrarSesion = onCerrarSesion
     ) { padding ->
         if (productosCriticos.isEmpty()) {
             Box(
