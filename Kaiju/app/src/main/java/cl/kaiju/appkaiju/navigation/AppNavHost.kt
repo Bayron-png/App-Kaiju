@@ -1,5 +1,9 @@
 package cl.kaiju.appkaiju.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,10 +31,8 @@ import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
 @Composable
 fun AppNavHost() {
-    // Contexto de toda la app (vive mientras la app esta abierta)
     val context = LocalContext.current.applicationContext
 
-    // Room necesita el contexto para abrir la base de datos
     val database = AppDatabase.obtenerInstancia(context)
     val repository = InventarioRepository(productoDao = database.productoDao(), movimientoDao = database.movimientoDao())
 
@@ -60,25 +62,36 @@ fun AppNavHost() {
     }
 
     val cerrarSesion: () -> Unit = {
-        loginViewModel.cerrarSesion() // borra rol, usuario y campos
+        loginViewModel.cerrarSesion()
         irALogin()
     }
 
     val navegarEnBarra: (String) -> Unit = {
-        destino -> rol?.let {
+            destino -> rol?.let {
             rolActual ->
-            navController.navigate(destino){
-                popUpTo(Destinos.rutaInicio(rolActual))
-                launchSingleTop = true
-            }
+        navController.navigate(destino){
+            popUpTo(Destinos.rutaInicio(rolActual))
+            launchSingleTop = true
         }
+    }
     }
 
     NavHost(
         navController = navController,
-        startDestination = Rutas.Login.ruta
+        startDestination = Rutas.Login.ruta,
+        enterTransition = {
+            slideInHorizontally(initialOffsetX = { 700 }) + fadeIn()
+        },
+        exitTransition = {
+            slideOutHorizontally(targetOffsetX = { -700 }) + fadeOut()
+        },
+        popEnterTransition = {
+            slideInHorizontally(initialOffsetX = { -700 }) + fadeIn()
+        },
+        popExitTransition = {
+            slideOutHorizontally(targetOffsetX = { 700 }) + fadeOut()
+        }
     ) {
-        // LOGIN
         composable(Rutas.Login.ruta) {
             PantallaLogin(
                 loginViewModel = loginViewModel,
@@ -96,7 +109,6 @@ fun AppNavHost() {
             )
         }
 
-        // CATALOGO PARA INVITADOS
         composable(Rutas.Catalogo.ruta) {
             PantallaCatalogo(
                 inventarioViewModel = inventarioViewModel,
@@ -107,15 +119,14 @@ fun AppNavHost() {
             )
         }
 
-        // INVENTARIO PARA USUARIOS CON ACCESO
         composable(Rutas.Inventario.ruta) {
             RutaProtegida(rol, Rutas.Inventario.ruta, irALogin) {
-                rolActual ->
+                    rolActual ->
                 PantallaInventario(
                     rol = rolActual,
                     inventarioViewModel = inventarioViewModel,
                     onNavegar = navegarEnBarra,
-                    onCerrarSesion = cerrarSesion, // uso de funcion nueva
+                    onCerrarSesion = cerrarSesion,
                     onIrAFormulario = { navController.navigate(Rutas.FormularioProducto.ruta) },
                     onIrADetalle = { sku ->
                         navController.navigate(Rutas.DetalleProducto.crearRuta(sku, false))
@@ -125,10 +136,9 @@ fun AppNavHost() {
             }
         }
 
-        // ALERTAS
         composable(Rutas.Alertas.ruta) {
             RutaProtegida(rol, Rutas.Alertas.ruta, irALogin) {
-                rolActual ->
+                    rolActual ->
                 PantallaAlertas(
                     rol = rolActual,
                     inventarioViewModel = inventarioViewModel,
@@ -141,18 +151,16 @@ fun AppNavHost() {
             }
         }
 
-        // REGISTRAR VENTA ( No tiene contenido aun )
         composable(Rutas.RegistrarVenta.ruta) {
             RutaProtegida(rol, Rutas.RegistrarVenta.ruta, irALogin) {
-                rolActual ->
+                    rolActual ->
                 PantallaRegistroVenta(
                     rol = rolActual,
-                    onVolver = {navController.popBackStack()}
+                    onVolver = { navController.popBackStack() }
                 )
             }
         }
 
-        // FORMULARIO DE PRODUCTO
         composable(Rutas.FormularioProducto.ruta) {
             PantallaFormularioProducto(
                 inventarioViewModel = inventarioViewModel,
@@ -161,7 +169,6 @@ fun AppNavHost() {
             )
         }
 
-        // DETALLE DEL PRODUCTO
         composable(
             route = Rutas.DetalleProducto.ruta,
             arguments = listOf(
@@ -195,7 +202,6 @@ fun AppNavHost() {
             )
         }
 
-        // MOVIMIENTOS
         composable(Rutas.Movimiento.ruta) {
             PantallaMovimiento(
                 inventarioViewModel = inventarioViewModel,

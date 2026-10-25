@@ -49,11 +49,9 @@ fun PantallaCatalogo(
     onVolver: () -> Unit,
     onIrADetalle: (String) -> Unit
 ) {
-    // Obtener los productos desde el ViewModel.
     val productosState by inventarioViewModel.productos.collectAsState()
 
     Scaffold(
-        // Barra superior del catálogo.
         topBar = {
             TopAppBar(
                 title = {
@@ -85,7 +83,6 @@ fun PantallaCatalogo(
             )
         },
 
-        // Barra inferior.
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
@@ -119,7 +116,6 @@ fun PantallaCatalogo(
         }
     ) { paddingValues ->
 
-        // Lista de productos disponibles.
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

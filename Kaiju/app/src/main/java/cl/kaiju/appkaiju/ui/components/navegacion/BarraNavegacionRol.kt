@@ -11,7 +11,6 @@ import cl.kaiju.appkaiju.model.usuario.RolUsuario
 import cl.kaiju.appkaiju.navigation.Destinos
 
 @Composable
-// Componente reutilizable
 fun BarraNavegacionRol(
     rol: RolUsuario,
     rutaActual: String,
@@ -20,9 +19,6 @@ fun BarraNavegacionRol(
 ) {
     NavigationBar{
         Destinos.paraRol(rol).forEach { destino ->
-            // En la barra de navegacion se mostraran destinos a los que
-            // tenga permitido acceder un usuario segun su rol
-            // PLANTILLA
             NavigationBarItem(
                 selected = destino.ruta == rutaActual,
                 onClick = { onNavegar(destino.ruta) },
@@ -35,9 +31,7 @@ fun BarraNavegacionRol(
                 label = { Text (destino.etiqueta) }
             )
         }
-        // Para todos los usuarios con algun rol
-        // se les mostrara la opcion de salir
-        // SALIR
+
         NavigationBarItem(
             selected = false,
             onClick = onCerrarSesion,
