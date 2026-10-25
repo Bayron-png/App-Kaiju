@@ -39,7 +39,7 @@ La aplicación móvil Kaiju permite consultar y administrar el catálogo de prod
 
 ### Sistema de alertas de stock
 - Identificación de productos sin stock disponible.
-- Detección de productos con stock bajo según el mínimo configurado para cada uno.
+- Detección de productos con stock bajo según el mínimo configurado para cada uno y productos con stock en 0.
 - Acceso a un apartado de alertas para facilitar la supervisión del inventario y la identificación de productos que requieren reposición.
 
 ## Instrucciones para configurar y ejecutar la aplicación
@@ -64,7 +64,7 @@ cd App-Kaiju
 
 4. Configurar el dispositivo. Conectar un dispositivo Android mediante USB con la depuración habilitada o crear e iniciar un emulador desde Device Manager.
 
-5. Ejecutar la aplicación. Seleccionar la configuración de ejecución correspondiente al módulo de la aplicación, normalmente app, y presionar el botón Run (▶).
+5. Ejecutar la aplicación. Seleccionar la configuración de ejecución correspondiente al módulo de la aplicación, normalmente app, y presionar el botón Run.
 
 6. Probar las funcionalidades. Una vez iniciada la aplicación, acceder al catálogo en modo invitado o utilizar un perfil con permisos de administración para gestionar productos, registrar movimientos y consultar las alertas de inventario.
 
