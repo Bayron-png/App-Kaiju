@@ -50,19 +50,14 @@ fun PantallaLogin(
     onLoginExitoso: () -> Unit = {},
     onIngresarComoInvitado: () -> Unit = {}
 ) {
-    // Observa el estado del ViewModel, si cambia la pantalla se redibuja sola
     val estado by loginViewModel.estado.collectAsState()
 
-    // Permite controlar el foco:
-    // mover el cursor entre campos o cerrar el teclado
     val focusManager = LocalFocusManager.current
 
-    // Funcion que usan el boton "Ingresar" y el enter del teclado
-    // para no duplicar logica
     val intentarLogin = {
-        focusManager.clearFocus() // quita el foco y cierra el teclado
-        if (loginViewModel.iniciarSesion()) { // true = credenciales correctas
-            onLoginExitoso()                  // navega a la siguiente pantalla
+        focusManager.clearFocus()
+        if (loginViewModel.iniciarSesion()) {
+            onLoginExitoso()
         }
     }
 
@@ -103,22 +98,17 @@ fun PantallaLogin(
             label = { Text("Correo Electrónico") },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
 
-            // Rojo si hay error de formato o error de credenciales
             isError = estado.errorCorreo != null || estado.errorCredenciales != null,
 
-            // Texto bajo el campo cuando ocurre el error propio del correo
             supportingText = { estado.errorCorreo?.let { Text(it) } },
 
-            // El enter no hace salto de linea
-            // El campo es de una sola linea
             singleLine = true,
 
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email, // teclado con @
-                imeAction = ImeAction.Next         // boton del teclado dice "siguiente"
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                // Al presionar "siguiente, el cursor baja al campo de contraseña
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
             modifier = Modifier.fillMaxWidth()
@@ -132,12 +122,10 @@ fun PantallaLogin(
             label = { Text("Contraseña") },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
 
-            // Muestra puntos en vez de letras
             visualTransformation = PasswordVisualTransformation(),
 
             isError = estado.errorContrasena != null || estado.errorCredenciales != null,
 
-            // Muestra el error propio de la contraseña o de credenciales
             supportingText = {
                 (estado.errorContrasena ?: estado.errorCredenciales)?.let { Text(it) }
             },
@@ -145,10 +133,9 @@ fun PantallaLogin(
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done // El boton del teclado dice "listo"
+                imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                // Al presionar "listo" se intenta iniciar sesion, igual que con el boton
                 onDone = { intentarLogin() }
             ),
             modifier = Modifier.fillMaxWidth()
@@ -168,7 +155,7 @@ fun PantallaLogin(
             Text("Ingresar")
         }
 
-        Spacer(modifier = Modifier.height(12.dp)) // <-- Espacio
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextButton(
             onClick = {

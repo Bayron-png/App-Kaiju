@@ -24,14 +24,13 @@ import cl.kaiju.appkaiju.ui.theme.TextoHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-// Componente reutilizable
 fun PlantillaPantallaRol(
     titulo: String,
     rol: RolUsuario,
     rutaActual: String,
     onNavegar: (String) -> Unit,
     onCerrarSesion: () -> Unit,
-    floatingActionButton: @Composable () -> Unit = {}, // opcional
+    floatingActionButton: @Composable () -> Unit = {},
     contenido: @Composable (PaddingValues) -> Unit
 ){
     Scaffold(
