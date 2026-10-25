@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import cl.kaiju.appkaiju.model.login.SesionActual
 
 class InventarioViewModel(
     private val repository: InventarioRepository
@@ -29,28 +30,53 @@ class InventarioViewModel(
         skuSeleccionado = sku
     }
 
-    fun registrarMovimiento(sku: String, esEntrada: Boolean, cantidad: Int) {
-        viewModelScope.launch {
-            val productoActual = productos.value.find { it.sku == sku }
-            if (productoActual != null) {
-                val nuevaCantidad = if (esEntrada) {
-                    productoActual.cantidadDisponible + cantidad
-                } else {
-                    (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0)
-                }
-                val productoActualizado = productoActual.copy(cantidadDisponible = nuevaCantidad)
-                repository.actualizarProducto(productoActualizado)
 
-                val tipoMovimiento = if (esEntrada) "Entrada" else "Salida"
-                val movimiento = Movimiento(
-                    skuProducto = sku,
-                    tipo = tipoMovimiento,
-                    cantidad = cantidad,
-                    motivo = if (esEntrada) "Reabastecimiento" else "Ajuste / Venta",
-                    fecha = System.currentTimeMillis()
-                )
-                repository.insertarMovimiento(movimiento)
-            }
+
+    suspend fun registrarMovimiento(
+        sku: String,
+        esEntrada: Boolean,
+        cantidad: Int
+    ): Producto? {
+        val productoActual = productos.value.find { it.sku == sku }
+            ?: return null
+
+        val nuevaCantidad = if (esEntrada) {
+            productoActual.cantidadDisponible + cantidad
+        } else {
+            (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0)
+        }
+
+        val productoActualizado = productoActual.copy(
+            cantidadDisponible = nuevaCantidad
+        )
+
+        repository.actualizarProducto(productoActualizado)
+
+        val movimiento = Movimiento(
+            skuProducto = sku,
+            tipo = if (esEntrada) "Entrada" else "Salida",
+            cantidad = cantidad,
+            motivo = if (esEntrada) "Reabastecimiento" else "Ajuste / Venta",
+            fecha = System.currentTimeMillis()
+        )
+
+        repository.insertarMovimiento(movimiento)
+
+        val pasoAStockBajo =
+            productoActual.cantidadDisponible > productoActual.stockMinimo &&
+                    productoActualizado.cantidadDisponible <= productoActualizado.stockMinimo
+
+        val llegoAStockCero =
+            productoActual.cantidadDisponible > 0 &&
+                    productoActualizado.cantidadDisponible == 0
+
+        return if (
+            (pasoAStockBajo || llegoAStockCero) &&
+            SesionActual.puedeRecibirNotificacionStock
+        ) {
+            productoActualizado
+        } else {
+            null
         }
     }
 
