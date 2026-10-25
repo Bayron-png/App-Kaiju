@@ -1,8 +1,10 @@
 package cl.kaiju.appkaiju.viewmodel.login
 
 import android.util.Patterns
+
 import androidx.lifecycle.ViewModel
 import cl.kaiju.appkaiju.model.login.EstadoLogin
+import cl.kaiju.appkaiju.model.login.SesionActual
 import cl.kaiju.appkaiju.model.usuario.RolUsuario
 import cl.kaiju.appkaiju.model.usuario.Usuario
 import cl.kaiju.appkaiju.repository.login.UsuarioRepository
@@ -18,8 +20,17 @@ class LoginViewModel(
     val estado: StateFlow<EstadoLogin> = _estado.asStateFlow()
 
     fun ingresarComoInvitado() {
+        val invitado = Usuario(
+            "Invitado",
+            "invitado@kaiju.cl",
+            "",
+            RolUsuario.INVITADO
+        )
+
+        SesionActual.iniciarSesion(invitado)
+
         _estado.value = _estado.value.copy(
-            usuarioAutenticado = Usuario("Invitado", "invitado@kaiju.cl", "", RolUsuario.INVITADO)
+            usuarioAutenticado = invitado
         )
     }
 
@@ -55,12 +66,16 @@ class LoginViewModel(
     }
 
     fun cerrarSesion() {
+        SesionActual.cerrarSesion()
         _estado.value = EstadoLogin()
     }
 
     fun iniciarSesion(): Boolean {
+
         // Valida el formato, si falla, no consulta al repositorio
-        if (!validarFormularioLogin()) return false
+        if (!validarFormularioLogin()) {
+            return false
+        }
 
         val correo = _estado.value.correo
         val contrasena = _estado.value.contrasena
@@ -69,6 +84,8 @@ class LoginViewModel(
         val usuario = usuarioRepository.autenticar(correo, contrasena)
 
         return if (usuario != null) {
+            SesionActual.iniciarSesion(usuario)
+
             // Exito: guarda el usuario (con su rol) y limpia todos los errores
             _estado.value = _estado.value.copy(
                 usuarioAutenticado = usuario,

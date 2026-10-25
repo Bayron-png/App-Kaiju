@@ -3,6 +3,9 @@ package cl.kaiju.appkaiju.viewmodel.catalogo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cl.kaiju.appkaiju.model.login.SesionActual
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import cl.kaiju.appkaiju.model.movimiento.Movimiento
 import cl.kaiju.appkaiju.model.producto.Producto
 import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
@@ -22,6 +25,12 @@ class InventarioViewModel(
         initialValue = emptyList()
     )
 
+    private val _alertaStockBajo = MutableSharedFlow<Producto>(
+        extraBufferCapacity = 1
+    )
+
+    val alertaStockBajo = _alertaStockBajo.asSharedFlow()
+
     var skuSeleccionado: String = ""
         private set
 
@@ -33,46 +42,69 @@ class InventarioViewModel(
         return repository.obtenerMovimientosPorProducto(sku)
     }
 
-    fun registrarMovimiento(
+
+    suspend fun registrarMovimiento(
         sku: String,
         tipo: String,
         cantidad: Int,
         motivo: String
-    ) {
-        viewModelScope.launch {
-            val productoActual = productos.value.firstOrNull { it.sku == sku }
-                ?: return@launch
+    ): Producto? {
+        val productoActual = productos.value.firstOrNull { it.sku == sku }
+            ?: return null
 
-            if (cantidad <= 0) return@launch
+        if (cantidad <= 0) return null
 
-            val nuevaCantidad = when (tipo) {
-                "Entrada" -> productoActual.cantidadDisponible + cantidad
-                "Salida" -> {
-                    if (cantidad > productoActual.cantidadDisponible) {
-                        return@launch
-                    }
-                    productoActual.cantidadDisponible - cantidad
+        val nuevaCantidad = when (tipo) {
+            "Entrada" -> productoActual.cantidadDisponible + cantidad
+
+            "Salida" -> {
+                if (cantidad > productoActual.cantidadDisponible) {
+                    return null
                 }
-                "Ajuste" -> cantidad
-                else -> return@launch
+                productoActual.cantidadDisponible - cantidad
             }
 
-            val productoActualizado = productoActual.copy(
-                cantidadDisponible = nuevaCantidad
-            )
+            "Ajuste" -> cantidad
+            else -> return null
+        }
 
-            repository.actualizarProducto(productoActualizado)
+        val productoActualizado = productoActual.copy(
+            cantidadDisponible = nuevaCantidad
+        )
 
-            repository.insertarMovimiento(
-                Movimiento(
-                    skuProducto = sku,
-                    tipo = tipo,
-                    cantidad = cantidad,
-                    motivo = motivo.trim()
-                )
+        // Guarda el nuevo stock en la base de datos
+        repository.actualizarProducto(productoActualizado)
+
+        // Registra el movimiento realizado
+        repository.insertarMovimiento(
+            Movimiento(
+                skuProducto = sku,
+                tipo = tipo,
+                cantidad = cantidad,
+                motivo = motivo.trim()
             )
+        )
+
+        // Comprueba si acaba de pasar a stock bajo
+        val pasoAStockBajo =
+            productoActual.cantidadDisponible > productoActual.stockMinimo &&
+                    productoActualizado.cantidadDisponible <= productoActualizado.stockMinimo
+
+        val llegoAStockCero =
+            productoActual.cantidadDisponible > 0 &&
+                    productoActualizado.cantidadDisponible == 0
+
+        // Solo administrador y encargado de inventario reciben la alerta
+        return if (
+            (pasoAStockBajo || llegoAStockCero) &&
+            SesionActual.puedeRecibirNotificacionStock
+        ) {
+            productoActualizado
+        } else {
+            null
         }
     }
+
 
     suspend fun agregarProducto(nuevoProducto: Producto): Boolean {
         val sku = nuevoProducto.sku.trim()

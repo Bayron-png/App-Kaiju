@@ -4,7 +4,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import cl.kaiju.appkaiju.model.producto.Producto
+import cl.kaiju.appkaiju.util.NotificacionStock
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,6 +34,34 @@ fun PantallaMovimiento(
     var errorMovimiento by remember { mutableStateOf<String?>(null) }
 
     val skuActual = inventarioViewModel.skuSeleccionado
+    val scope = rememberCoroutineScope();
+
+    val context = LocalContext.current
+
+    var productoPendiente by remember {
+        mutableStateOf<Producto?>(null)
+    }
+
+    var volverDespuesDelPermiso by remember {
+        mutableStateOf(false)
+    }
+
+    val permisoNotificaciones = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { permitido ->
+        if (permitido) {
+            productoPendiente?.let { producto ->
+                NotificacionStock.mostrar(context, producto)
+            }
+        }
+
+        productoPendiente = null
+
+        if (volverDespuesDelPermiso) {
+            volverDespuesDelPermiso = false
+            onMovimientoRegistrado()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -143,6 +182,7 @@ fun PantallaMovimiento(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
+
                 onClick = {
                     val cantidadInt = cantidad.toIntOrNull()
 
@@ -167,15 +207,42 @@ fun PantallaMovimiento(
                         else -> null
                     }
 
-                    if (errorMovimiento == null) {
-                        inventarioViewModel.registrarMovimiento(
-                            sku = skuActual,
-                            tipo = tipoMovimiento,
-                            cantidad = cantidadInt!!,
-                            motivo = motivo.trim()
-                        )
+                    if (errorMovimiento == null && cantidadInt != null) {
+                        scope.launch {
+                            val productoAlerta =
+                                inventarioViewModel.registrarMovimiento(
+                                    sku = skuActual,
+                                    tipo = tipoMovimiento,
+                                    cantidad = cantidadInt,
+                                    motivo = motivo.trim()
+                                )
 
-                        onMovimientoRegistrado()
+                            if (productoAlerta != null) {
+                                if (
+                                    Build.VERSION.SDK_INT >=
+                                    Build.VERSION_CODES.TIRAMISU &&
+                                    ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    productoPendiente = productoAlerta
+                                    volverDespuesDelPermiso = true
+
+                                    permisoNotificaciones.launch(
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    )
+                                } else {
+                                    NotificacionStock.mostrar(
+                                        context,
+                                        productoAlerta
+                                    )
+                                    onMovimientoRegistrado()
+                                }
+                            } else {
+                                onMovimientoRegistrado()
+                            }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
