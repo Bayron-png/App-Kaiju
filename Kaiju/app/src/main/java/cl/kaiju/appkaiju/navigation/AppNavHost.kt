@@ -63,6 +63,7 @@ fun AppNavHost() {
 
     val cerrarSesion: () -> Unit = {
         loginViewModel.cerrarSesion()
+        inventarioViewModel.onBusquedaChange("") // limpia la busqueda
         irALogin()
     }
 

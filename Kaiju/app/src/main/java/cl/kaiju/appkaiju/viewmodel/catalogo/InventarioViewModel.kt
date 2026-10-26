@@ -2,15 +2,18 @@ package cl.kaiju.appkaiju.viewmodel.catalogo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cl.kaiju.appkaiju.model.login.SesionActual
 import cl.kaiju.appkaiju.model.movimiento.Movimiento
 import cl.kaiju.appkaiju.model.producto.Producto
 import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import cl.kaiju.appkaiju.model.login.SesionActual
 
 class InventarioViewModel(
     private val repository: InventarioRepository
@@ -18,6 +21,31 @@ class InventarioViewModel(
 
     val productos: StateFlow<List<Producto>> = repository.productos
         .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+    private val _busqueda = MutableStateFlow("")
+
+    val busqueda: StateFlow<String> = _busqueda.asStateFlow()
+
+    fun onBusquedaChange(texto: String){
+        _busqueda.value = texto.take(40) // largo maximo
+    }
+
+    val productosFiltrados: StateFlow<List<Producto>> =
+        combine(productos, _busqueda){
+            lista, texto ->
+            val consulta = texto.trim()
+            if (consulta.isEmpty()){
+                lista
+            } else {
+                lista.filter {
+                    it.nombre.contains(consulta, ignoreCase = true) ||
+                    it.sku.contains(consulta, ignoreCase = true)
+                }
+            }
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
@@ -30,14 +58,12 @@ class InventarioViewModel(
         skuSeleccionado = sku
     }
 
-
-
     suspend fun registrarMovimiento(
         sku: String,
         esEntrada: Boolean,
         cantidad: Int
     ): Producto? {
-        val productoActual = productos.value.find { it.sku == sku }
+        val productoActual = productos.value.find{ it.sku == sku }
             ?: return null
 
         val nuevaCantidad = if (esEntrada) {
@@ -45,7 +71,6 @@ class InventarioViewModel(
         } else {
             (productoActual.cantidadDisponible - cantidad).coerceAtLeast(0)
         }
-
         val productoActualizado = productoActual.copy(
             cantidadDisponible = nuevaCantidad
         )
@@ -79,16 +104,16 @@ class InventarioViewModel(
             null
         }
     }
-
     suspend fun agregarProducto(nuevoProducto: Producto) {
         repository.insertarProducto(nuevoProducto)
     }
-
     fun obtenerMovimientosPorProducto(sku: String): Flow<List<Movimiento>> {
         return repository.obtenerMovimientosPorProducto(sku)
     }
-
-    fun eliminarProducto(sku: String, onExito: () -> Unit = {}) {
+    fun eliminarProducto(
+        sku: String,
+        onExito: () -> Unit
+    ) {
         viewModelScope.launch {
             repository.eliminarProducto(sku)
             onExito()
