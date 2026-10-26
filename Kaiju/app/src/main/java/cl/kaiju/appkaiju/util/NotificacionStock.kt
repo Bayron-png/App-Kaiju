@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -73,5 +75,22 @@ object NotificacionStock {
                 },
                 notificacion
             )
+        vibrar(context)
+    }
+
+    private fun vibrar(context: Context) {
+        @Suppress("DEPRECATION")
+        val vibrador = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        if (!vibrador.hasVibrator()) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrador.vibrate(
+                VibrationEffect.createOneShot(400, VibrationEffect.DEFAULT_AMPLITUDE)
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            vibrador.vibrate(400)
+        }
     }
 }
