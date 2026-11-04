@@ -1,6 +1,9 @@
 package cl.kaiju.appkaiju.ui.screen.login
 
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import cl.kaiju.appkaiju.util.rememberEasterEggDetector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.ui.res.painterResource
@@ -48,9 +51,14 @@ import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 fun PantallaLogin(
     loginViewModel: LoginViewModel = viewModel(),
     onLoginExitoso: () -> Unit = {},
-    onIngresarComoInvitado: () -> Unit = {}
+    onIngresarComoInvitado: () -> Unit = {},
+    onAbrirPokedex: () -> Unit = {}
 ) {
     val estado by loginViewModel.estado.collectAsState()
+
+    val onClickLogo = rememberEasterEggDetector {
+        onAbrirPokedex()
+    }
 
     val focusManager = LocalFocusManager.current
 
@@ -74,7 +82,8 @@ fun PantallaLogin(
             contentDescription = "Logo de Kaiju Store",
             modifier = Modifier
                 .size(100.dp)
-                .padding(bottom = 12.dp),
+                .padding(bottom = 12.dp)
+                .clickable { onClickLogo() },
             contentScale = ContentScale.Fit
         )
 
@@ -97,13 +106,19 @@ fun PantallaLogin(
             onValueChange = { loginViewModel.onCorreoChange(it) },
             label = { Text("Correo Electrónico") },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-
             isError = estado.errorCorreo != null || estado.errorCredenciales != null,
-
             supportingText = { estado.errorCorreo?.let { Text(it) } },
-
             singleLine = true,
-
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Primario,
+                unfocusedBorderColor = Blanco,
+                focusedLabelColor = Primario,
+                unfocusedLabelColor = Blanco.copy(alpha = 0.8f),
+                focusedLeadingIconColor = Primario,
+                unfocusedLeadingIconColor = Blanco,
+                focusedTextColor = Blanco,
+                unfocusedTextColor = Blanco
+            ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -121,16 +136,22 @@ fun PantallaLogin(
             onValueChange = { loginViewModel.onContrasenaChange(it) },
             label = { Text("Contraseña") },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-
             visualTransformation = PasswordVisualTransformation(),
-
             isError = estado.errorContrasena != null || estado.errorCredenciales != null,
-
             supportingText = {
                 (estado.errorContrasena ?: estado.errorCredenciales)?.let { Text(it) }
             },
-
             singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Primario,
+                unfocusedBorderColor = Blanco,
+                focusedLabelColor = Primario,
+                unfocusedLabelColor = Blanco.copy(alpha = 0.8f),
+                focusedLeadingIconColor = Primario,
+                unfocusedLeadingIconColor = Blanco,
+                focusedTextColor = Blanco,
+                unfocusedTextColor = Blanco
+            ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done

@@ -26,6 +26,7 @@ import cl.kaiju.appkaiju.ui.screen.inventario.PantallaInventario
 import cl.kaiju.appkaiju.ui.screen.login.PantallaLogin
 import cl.kaiju.appkaiju.ui.screen.movimientos.PantallaMovimiento
 import cl.kaiju.appkaiju.ui.screen.personalventas.PantallaRegistroVenta
+import cl.kaiju.appkaiju.ui.screen.pokedex.PantallaPokedex
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 import cl.kaiju.appkaiju.viewmodel.login.LoginViewModel
 
@@ -67,14 +68,13 @@ fun AppNavHost() {
         irALogin()
     }
 
-    val navegarEnBarra: (String) -> Unit = {
-            destino -> rol?.let {
-            rolActual ->
-        navController.navigate(destino){
-            popUpTo(Destinos.rutaInicio(rolActual))
-            launchSingleTop = true
+    val navegarEnBarra: (String) -> Unit = { destino ->
+        rol?.let { rolActual ->
+            navController.navigate(destino){
+                popUpTo(Destinos.rutaInicio(rolActual))
+                launchSingleTop = true
+            }
         }
-    }
     }
 
     NavHost(
@@ -106,6 +106,9 @@ fun AppNavHost() {
                 },
                 onIngresarComoInvitado = {
                     navController.navigate(Rutas.Catalogo.ruta)
+                },
+                onAbrirPokedex = {
+                    navController.navigate(Rutas.Pokedex.ruta) // Conexión al Easter Egg
                 }
             )
         }
@@ -121,8 +124,7 @@ fun AppNavHost() {
         }
 
         composable(Rutas.Inventario.ruta) {
-            RutaProtegida(rol, Rutas.Inventario.ruta, irALogin) {
-                    rolActual ->
+            RutaProtegida(rol, Rutas.Inventario.ruta, irALogin) { rolActual ->
                 PantallaInventario(
                     rol = rolActual,
                     inventarioViewModel = inventarioViewModel,
@@ -138,8 +140,7 @@ fun AppNavHost() {
         }
 
         composable(Rutas.Alertas.ruta) {
-            RutaProtegida(rol, Rutas.Alertas.ruta, irALogin) {
-                    rolActual ->
+            RutaProtegida(rol, Rutas.Alertas.ruta, irALogin) { rolActual ->
                 PantallaAlertas(
                     rol = rolActual,
                     inventarioViewModel = inventarioViewModel,
@@ -153,8 +154,7 @@ fun AppNavHost() {
         }
 
         composable(Rutas.RegistrarVenta.ruta) {
-            RutaProtegida(rol, Rutas.RegistrarVenta.ruta, irALogin) {
-                    rolActual ->
+            RutaProtegida(rol, Rutas.RegistrarVenta.ruta, irALogin) { rolActual ->
                 PantallaRegistroVenta(
                     rol = rolActual,
                     onVolver = { navController.popBackStack() }
@@ -173,28 +173,18 @@ fun AppNavHost() {
         composable(
             route = Rutas.DetalleProducto.ruta,
             arguments = listOf(
-                navArgument("sku") {
-                    type = NavType.StringType
-                },
-                navArgument("esInvitado") {
-                    type = NavType.BoolType
-                    defaultValue = false
-                }
+                navArgument("sku") { type = NavType.StringType },
+                navArgument("esInvitado") { type = NavType.BoolType; defaultValue = false }
             )
         ) { backStackEntry ->
-            val sku = backStackEntry.arguments?.getString("sku")
-                ?: "SKU-GENERICO"
-
-            val esInvitado = backStackEntry.arguments
-                ?.getBoolean("esInvitado") ?: false
+            val sku = backStackEntry.arguments?.getString("sku") ?: "SKU-GENERICO"
+            val esInvitado = backStackEntry.arguments?.getBoolean("esInvitado") ?: false
 
             PantallaDetalleProducto(
                 skuProducto = sku,
                 inventarioViewModel = inventarioViewModel,
                 esInvitado = esInvitado,
-                onVolver = {
-                    navController.popBackStack()
-                },
+                onVolver = { navController.popBackStack() },
                 onIrAMovimiento = {
                     if (!esInvitado) {
                         navController.navigate(Rutas.Movimiento.ruta)
@@ -208,6 +198,13 @@ fun AppNavHost() {
                 inventarioViewModel = inventarioViewModel,
                 onVolver = { navController.popBackStack() },
                 onMovimientoRegistrado = { navController.popBackStack() }
+            )
+        }
+
+        // 🥚 Pokédex (Easter Egg)
+        composable(Rutas.Pokedex.ruta) {
+            PantallaPokedex(
+                onVolver = { navController.popBackStack() }
             )
         }
     }

@@ -3,6 +3,9 @@ package cl.kaiju.appkaiju.ui.screen.pokedex
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -103,6 +106,13 @@ fun PantallaPokedex(
                     onValueChange = { viewModel.actualizarTextoBusqueda(it) },
                     label = { Text("Nombre o ID del Pokémon") },
                     singleLine = true,
+                    // Buscar al presionar Enter
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = { viewModel.buscarPokemon() }
+                    ),
                     modifier = Modifier.weight(1f)
                 )
 
@@ -125,7 +135,7 @@ fun PantallaPokedex(
             when (val state = uiState) {
                 is PokedexUiState.Vacio -> {
                     Text(
-                        text = "🔍 Ingresa el nombre (ej: 'pikachu') o el número de ID (ej: '25') para buscar.",
+                        text = "🔍 Ingresa el nombre (Ej: 'pikachu') o el número de ID (ej: '25') para buscar.",
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(top = 32.dp)

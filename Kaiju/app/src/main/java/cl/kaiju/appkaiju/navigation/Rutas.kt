@@ -11,9 +11,10 @@ sealed class Rutas(val ruta: String) {
         fun crearRuta(sku: String, esInvitado: Boolean) =
             "detalle_producto/$sku/$esInvitado"
     }
-
     object RegistrarVenta : Rutas("registrar_venta")
-
     object Movimiento : Rutas("movimiento")
     object Alertas : Rutas("alertas")
+
+    // 🥚 Easter Egg
+    object Pokedex : Rutas("pokedex")
 }
