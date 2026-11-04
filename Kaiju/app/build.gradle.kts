@@ -38,6 +38,12 @@ android {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
+    // Retrofit + Gson (para consumir la PokéAPI)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    // Coil (para cargar las imágenes de los Pokémon por URL en Compose)
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
     implementation("androidx.navigation:navigation-compose:2.8.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.compose.material:material-icons-extended")
