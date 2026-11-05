@@ -81,7 +81,7 @@ Sketch, wireframe, mockup y demás material de diseño del equipo (Subidos al dr
 ## **Función Secreta (Easter Egg)**
 
 ### Descripción
-La función secreta corresponde a un apartado que se accede clickeando el logo de kaiju. Esta misma provee información de pokemones como su:
+La función secreta corresponde a un apartado que se accede clickeando el logo de kaiju en la pantalla inicio de sesión. Esta pantalla provee información de pokemones como su:
 - ID
 - Nombre
 - Tipo
@@ -93,9 +93,16 @@ La función secreta corresponde a un apartado que se accede clickeando el logo d
 La API utilizada fué **"PokeAPI"**, disponiendo de una amplia base de datos con información de pokemones para uso público.
 
 ### EndPoint
-El endpoint utilizado en este caso fué "https://pokeapi.co/api/v2/" y sus variantes son "pokemon/**{nombreOId}**"
+El endpoint utilizado en este caso fué `https://pokeapi.co/api/v2/` y su variante es `https://pokeapi.co/api/v2/pokemon/{nombreOId}`.
 
-### Como acceder
-Al pulsar 10 veces seguidas (>500ms por clic) en el logo de la pantalla de inicio de sesión, se redirige a la pantalla para buscar pokemones por su ID o nombre, usando el permiso de internet y validando el mismo al dar un mensaje de error si no se dispone de la red.
+### Cómo activar el Easter Egg
+Al pulsar **10 veces seguidas** en el logo de la pantalla de inicio de sesión (*Login*), se activa el disparador que redirige automáticamente a la pantalla oculta de la Pokédex.
+
+### Cómo probarla
+Una vez activado el Easter Egg y estando en la pantalla de la Pokédex:
+1. Asegúrate de que el dispositivo tenga conexión a internet (se valida el permiso de red).
+2. Ingresa el nombre de un Pokémon en la barra de búsqueda (por ejemplo: `pikachu`, `charizard`, `bulbasaur`) o su ID numérico (por ejemplo: `25`, `1`).
+3. Presiona el botón de **Buscar**.
+4. La aplicación consultará la PokeAPI y mostrará en pantalla la tarjeta con el ID, nombre, tipo, altura, peso e imagen del Pokémon consultado.
 
 ### Capturas<img width="1080" height="2216" alt="Screenshot_2026-11-04-20-57-57-835_cl kaiju appkaiju-edit" src="https://github.com/user-attachments/assets/1641cb7a-4505-489b-8f55-7bc495aefe34" />
