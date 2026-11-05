@@ -77,3 +77,26 @@ Sketch, wireframe, mockup y demás material de diseño del equipo (Subidos al dr
 ### **Carpetas del equipo:**
 - [Drive Caso Kaiju](https://drive.google.com/drive/folders/12vOZTJMERUu-XkpzzRBcUCfUwOX1UqIa?usp=drive_link)
 - [Tablero Trello](https://trello.com/b/rKnWL8ft/caso-kaiju-desarrollo-apps-moviles)
+
+## **Función Secreta (Easter Egg)**
+
+### Descripción
+La función secreta corresponde a un apartado que se accede clickeando el logo de kaiju. Esta misma provee información de pokemones como su:
+- ID
+- Nombre
+- Tipo
+- Altura
+- Peso
+- Imagen del mismo
+-
+### API
+La API utilizada fué **"PokeAPI"**, disponiendo de una amplia base de datos con información de pokemones para uso público.
+
+### EndPoint
+El endpoint utilizado en este caso fué "https://pokeapi.co/api/v2/" y sus variantes son "pokemon/**{nombreOId}**"
+
+### Como acceder
+Al pulsar 10 veces seguidas (>500ms por clic) en el logo de la pantalla de inicio de sesión, se redirige a la pantalla para buscar pokemones por su ID o nombre, usando el permiso de internet y validando el mismo al dar un mensaje de error si no se dispone de la red.
+
+### Capturas
+<img width="1080" height="2216" alt="Screenshot_2026-11-04-20-57-57-835_cl kaiju appkaiju-edit" src="https://github.com/user-attachments/assets/1641cb7a-4505-489b-8f55-7bc495aefe34" />
