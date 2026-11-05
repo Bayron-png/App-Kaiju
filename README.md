@@ -98,5 +98,4 @@ El endpoint utilizado en este caso fué "https://pokeapi.co/api/v2/" y sus varia
 ### Como acceder
 Al pulsar 10 veces seguidas (>500ms por clic) en el logo de la pantalla de inicio de sesión, se redirige a la pantalla para buscar pokemones por su ID o nombre, usando el permiso de internet y validando el mismo al dar un mensaje de error si no se dispone de la red.
 
-### Capturas
-<img width="1080" height="2216" alt="Screenshot_2026-11-04-20-57-57-835_cl kaiju appkaiju-edit" src="https://github.com/user-attachments/assets/1641cb7a-4505-489b-8f55-7bc495aefe34" />
+### Capturas<img width="1080" height="2216" alt="Screenshot_2026-11-04-20-57-57-835_cl kaiju appkaiju-edit" src="https://github.com/user-attachments/assets/1641cb7a-4505-489b-8f55-7bc495aefe34" />
