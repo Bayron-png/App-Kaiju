@@ -88,7 +88,7 @@ La función secreta corresponde a un apartado que se accede clickeando el logo d
 - Altura
 - Peso
 - Imagen del mismo
--
+
 ### API
 La API utilizada fué **"PokeAPI"**, disponiendo de una amplia base de datos con información de pokemones para uso público.
 
