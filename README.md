@@ -77,6 +77,7 @@ Sketch, wireframe, mockup y demás material de diseño del equipo (Subidos al dr
 ### **Carpetas del equipo:**
 - [Drive Caso Kaiju](https://drive.google.com/drive/folders/12vOZTJMERUu-XkpzzRBcUCfUwOX1UqIa?usp=drive_link)
 - [Tablero Trello](https://trello.com/b/rKnWL8ft/caso-kaiju-desarrollo-apps-moviles)
+- [Diagrama de flujo](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Diagrama%20de%20flujo%20-%20app%20Kaiju.drawio&dark=0#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1uI4tBsdldcoiiz9aATtBcTlo7mZs2bQp%26export%3Ddownload)
 
 ## **Función Secreta (Easter Egg)**
 
