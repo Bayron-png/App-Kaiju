@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -120,6 +121,13 @@ private fun MainFormFields(
         value = estado.sku,
         onValueChange = onSkuChange,
         label = { Text("SKU") },
+        isError = estado.errorSku != null,
+        supportingText = { estado.errorSku?.let { Text(it) } },
+        trailingIcon = {
+            if (estado.errorSku != null) {
+                Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+            }
+        },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
@@ -129,6 +137,13 @@ private fun MainFormFields(
         value = estado.nombre,
         onValueChange = onNombreChange,
         label = { Text("Nombre del Producto") },
+        isError = estado.errorNombre != null,
+        supportingText = { estado.errorNombre?.let { Text(it) } },
+        trailingIcon = {
+            if (estado.errorNombre != null) {
+                Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+            }
+        },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
@@ -138,6 +153,13 @@ private fun MainFormFields(
         value = estado.categoria,
         onValueChange = onCategoriaChange,
         label = { Text("Categoría") },
+        isError = estado.errorCategoria != null,
+        supportingText = { estado.errorCategoria?.let { Text(it) } },
+        trailingIcon = {
+            if (estado.errorCategoria != null) {
+                Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+            }
+        },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
@@ -147,6 +169,13 @@ private fun MainFormFields(
         value = estado.precio,
         onValueChange = onPrecioChange,
         label = { Text("Precio") },
+        isError = estado.errorPrecio != null,
+        supportingText = { estado.errorPrecio?.let { Text(it) } },
+        trailingIcon = {
+            if (estado.errorPrecio != null) {
+                Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+            }
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Decimal,
             imeAction = ImeAction.Next
@@ -159,6 +188,13 @@ private fun MainFormFields(
         value = estado.stock,
         onValueChange = onStockChange,
         label = { Text("Stock Inicial") },
+        isError = estado.errorStock != null,
+        supportingText = { estado.errorStock?.let { Text(it) } },
+        trailingIcon = {
+            if (estado.errorStock != null) {
+                Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+            }
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Next
@@ -171,24 +207,26 @@ private fun MainFormFields(
         value = estado.stockMinimo,
         onValueChange = onStockMinimoChange,
         label = { Text("Stock Mínimo") },
+        isError = estado.errorStockMinimo != null,
+        supportingText = {
+            if (estado.errorStockMinimo != null) {
+                Text(estado.errorStockMinimo)
+            } else {
+                Text("Generará una alerta cuando el stock llegue a este nivel o menos.")
+            }
+        },
+        trailingIcon = {
+            if (estado.errorStockMinimo != null) {
+                Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+            }
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        supportingText = {
-            Text("Generará una alerta cuando el stock llegue a este nivel o menos.")
-        },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
     )
-
-    estado.errorFormulario?.let { mensaje ->
-        Text(
-            text = mensaje,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
 
     Spacer(modifier = Modifier.height(16.dp))
 

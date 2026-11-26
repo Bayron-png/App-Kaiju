@@ -26,7 +26,12 @@ class InventarioViewModel(
         val precio: String = "",
         val stock: String = "",
         val stockMinimo: String = "1",
-        val errorFormulario: String? = null,
+        val errorSku: String? = null,
+        val errorNombre: String? = null,
+        val errorCategoria: String? = null,
+        val errorPrecio: String? = null,
+        val errorStock: String? = null,
+        val errorStockMinimo: String? = null,
         val guardando: Boolean = false
     )
 
@@ -34,28 +39,28 @@ class InventarioViewModel(
     val estadoFormulario: StateFlow<EstadoFormularioProducto> = _estadoFormulario.asStateFlow()
 
     fun onSkuChange(nuevoSku: String) {
-        _estadoFormulario.value = _estadoFormulario.value.copy(sku = nuevoSku, errorFormulario = null)
+        _estadoFormulario.value = _estadoFormulario.value.copy(sku = nuevoSku, errorSku = null)
     }
 
     fun onNombreChange(nuevoNombre: String) {
-        _estadoFormulario.value = _estadoFormulario.value.copy(nombre = nuevoNombre, errorFormulario = null)
+        _estadoFormulario.value = _estadoFormulario.value.copy(nombre = nuevoNombre, errorNombre = null)
     }
 
     fun onCategoriaChange(nuevaCategoria: String) {
-        _estadoFormulario.value = _estadoFormulario.value.copy(categoria = nuevaCategoria, errorFormulario = null)
+        _estadoFormulario.value = _estadoFormulario.value.copy(categoria = nuevaCategoria, errorCategoria = null)
     }
 
     fun onPrecioChange(nuevoPrecio: String) {
-        _estadoFormulario.value = _estadoFormulario.value.copy(precio = nuevoPrecio, errorFormulario = null)
+        _estadoFormulario.value = _estadoFormulario.value.copy(precio = nuevoPrecio, errorPrecio = null)
     }
 
     fun onStockChange(nuevoStock: String) {
-        _estadoFormulario.value = _estadoFormulario.value.copy(stock = nuevoStock, errorFormulario = null)
+        _estadoFormulario.value = _estadoFormulario.value.copy(stock = nuevoStock, errorStock = null)
     }
 
     fun onStockMinimoChange(nuevoStockMinimo: String) {
         if (nuevoStockMinimo.all { it.isDigit() }) {
-            _estadoFormulario.value = _estadoFormulario.value.copy(stockMinimo = nuevoStockMinimo, errorFormulario = null)
+            _estadoFormulario.value = _estadoFormulario.value.copy(stockMinimo = nuevoStockMinimo, errorStockMinimo = null)
         }
     }
 
@@ -70,22 +75,36 @@ class InventarioViewModel(
         val stockInt = actual.stock.toIntOrNull()
         val stockMinimoInt = actual.stockMinimo.toIntOrNull()
 
-        val mensajeError = when {
-            skuLimpio.isBlank() || skuLimpio == "SKU-" -> "Ingresa un SKU válido."
-            actual.nombre.isBlank() -> "Ingresa el nombre del producto."
-            actual.categoria.isBlank() -> "Ingresa la categoría."
-            precioDouble == null || !precioDouble.isFinite() || precioDouble < 0 -> "Ingresa un precio válido."
-            stockInt == null || stockInt < 0 -> "Ingresa un stock inicial válido."
-            stockMinimoInt == null || stockMinimoInt < 0 -> "Ingresa un stock mínimo válido."
-            else -> null
-        }
+        val errSku = if (skuLimpio.isBlank() || skuLimpio == "SKU-") "Ingresa un SKU válido." else null
+        val errNombre = if (actual.nombre.isBlank()) "Ingresa el nombre del producto." else null
+        val errCategoria = if (actual.categoria.isBlank()) "Ingresa la categoría." else null
+        val errPrecio = if (precioDouble == null || !precioDouble.isFinite() || precioDouble < 0) "Ingresa un precio válido." else null
+        val errStock = if (stockInt == null || stockInt < 0) "Ingresa un stock inicial válido." else null
+        val errStockMinimo = if (stockMinimoInt == null || stockMinimoInt < 0) "Ingresa un stock mínimo válido." else null
 
-        if (mensajeError != null) {
-            _estadoFormulario.value = actual.copy(errorFormulario = mensajeError)
+        val tieneErrores = listOf(errSku, errNombre, errCategoria, errPrecio, errStock, errStockMinimo).any { it != null }
+
+        if (tieneErrores) {
+            _estadoFormulario.value = actual.copy(
+                errorSku = errSku,
+                errorNombre = errNombre,
+                errorCategoria = errCategoria,
+                errorPrecio = errPrecio,
+                errorStock = errStock,
+                errorStockMinimo = errStockMinimo
+            )
             return false
         }
 
-        _estadoFormulario.value = actual.copy(guardando = true, errorFormulario = null)
+        _estadoFormulario.value = actual.copy(
+            guardando = true,
+            errorSku = null,
+            errorNombre = null,
+            errorCategoria = null,
+            errorPrecio = null,
+            errorStock = null,
+            errorStockMinimo = null
+        )
         return try {
             val nuevoProducto = Producto(
                 sku = skuLimpio,
@@ -101,7 +120,7 @@ class InventarioViewModel(
         } catch (_: Exception) {
             _estadoFormulario.value = actual.copy(
                 guardando = false,
-                errorFormulario = "No se pudo guardar el producto. Inténtalo nuevamente."
+                errorSku = "No se pudo guardar el producto. Inténtalo nuevamente."
             )
             false
         }
@@ -111,7 +130,8 @@ class InventarioViewModel(
         val sku: String = "",
         val esEntrada: Boolean = true,
         val cantidad: String = "",
-        val errorFormulario: String? = null,
+        val errorSku: String? = null,
+        val errorCantidad: String? = null,
         val guardando: Boolean = false
     )
 
@@ -119,7 +139,7 @@ class InventarioViewModel(
     val estadoMovimiento: StateFlow<EstadoFormularioMovimiento> = _estadoMovimiento.asStateFlow()
 
     fun onSkuMovimientoChange(sku: String) {
-        _estadoMovimiento.value = _estadoMovimiento.value.copy(sku = sku, errorFormulario = null)
+        _estadoMovimiento.value = _estadoMovimiento.value.copy(sku = sku, errorSku = null)
     }
 
     fun onTipoMovimientoChange(esEntrada: Boolean) {
@@ -128,7 +148,7 @@ class InventarioViewModel(
 
     fun onCantidadMovimientoChange(cantidad: String) {
         if (cantidad.all { it.isDigit() }) {
-            _estadoMovimiento.value = _estadoMovimiento.value.copy(cantidad = cantidad, errorFormulario = null)
+            _estadoMovimiento.value = _estadoMovimiento.value.copy(cantidad = cantidad, errorCantidad = null)
         }
     }
 
@@ -141,19 +161,22 @@ class InventarioViewModel(
         val skuLimpio = actual.sku.trim()
         val cantidadInt = actual.cantidad.toIntOrNull()
 
-        val error = when {
+        val errSku = when {
             skuLimpio.isBlank() -> "Ingresa un SKU válido."
             productos.value.none { it.sku == skuLimpio } -> "No existe un producto con el SKU ingresado."
-            cantidadInt == null || cantidadInt <= 0 -> "Ingresa una cantidad mayor a 0."
             else -> null
         }
+        val errCantidad = if (cantidadInt == null || cantidadInt <= 0) "Ingresa una cantidad mayor a 0." else null
 
-        if (error != null) {
-            _estadoMovimiento.value = actual.copy(errorFormulario = error)
+        if (errSku != null || errCantidad != null) {
+            _estadoMovimiento.value = actual.copy(
+                errorSku = errSku,
+                errorCantidad = errCantidad
+            )
             return Pair(null, false)
         }
 
-        _estadoMovimiento.value = actual.copy(guardando = true, errorFormulario = null)
+        _estadoMovimiento.value = actual.copy(guardando = true, errorSku = null, errorCantidad = null)
         return try {
             val productoAlerta = registrarMovimiento(
                 sku = skuLimpio,
@@ -165,7 +188,7 @@ class InventarioViewModel(
         } catch (_: Exception) {
             _estadoMovimiento.value = actual.copy(
                 guardando = false,
-                errorFormulario = "No se pudo registrar el movimiento. Inténtalo nuevamente."
+                errorCantidad = "No se pudo registrar el movimiento. Inténtalo nuevamente."
             )
             Pair(null, false)
         }

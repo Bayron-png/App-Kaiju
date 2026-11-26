@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -79,6 +80,13 @@ fun PantallaMovimiento(
                 value = estadoMovimiento.sku,
                 onValueChange = inventarioViewModel::onSkuMovimientoChange,
                 label = { Text("SKU del Producto") },
+                isError = estadoMovimiento.errorSku != null,
+                supportingText = { estadoMovimiento.errorSku?.let { Text(it) } },
+                trailingIcon = {
+                    if (estadoMovimiento.errorSku != null) {
+                        Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+                    }
+                },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -107,6 +115,13 @@ fun PantallaMovimiento(
                 value = estadoMovimiento.cantidad,
                 onValueChange = inventarioViewModel::onCantidadMovimientoChange,
                 label = { Text("Cantidad") },
+                isError = estadoMovimiento.errorCantidad != null,
+                supportingText = { estadoMovimiento.errorCantidad?.let { Text(it) } },
+                trailingIcon = {
+                    if (estadoMovimiento.errorCantidad != null) {
+                        Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -114,14 +129,6 @@ fun PantallaMovimiento(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-
-            estadoMovimiento.errorFormulario?.let { mensaje ->
-                Text(
-                    text = mensaje,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -145,7 +152,7 @@ fun PantallaMovimiento(
                                     permisoNotificaciones.launch(
                                         Manifest.permission.POST_NOTIFICATIONS
                                     )
-                                } else if (permisoConcedido) {
+                                } else {
                                     NotificacionStock.mostrar(
                                         context,
                                         productoAlerta
