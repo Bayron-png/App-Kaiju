@@ -130,7 +130,10 @@ fun AppNavHost() {
                     inventarioViewModel = inventarioViewModel,
                     onNavegar = navegarEnBarra,
                     onCerrarSesion = cerrarSesion,
-                    onIrAFormulario = { navController.navigate(Rutas.FormularioProducto.ruta) },
+                    onIrAFormulario = {
+                        inventarioViewModel.resetearFormulario()
+                        navController.navigate(Rutas.FormularioProducto.ruta)
+                    },
                     onIrADetalle = { sku ->
                         navController.navigate(Rutas.DetalleProducto.crearRuta(sku, false))
                     },

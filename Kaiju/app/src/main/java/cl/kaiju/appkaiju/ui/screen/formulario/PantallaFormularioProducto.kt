@@ -13,7 +13,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cl.kaiju.appkaiju.model.producto.Producto
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 import kotlinx.coroutines.launch
 
@@ -23,24 +22,23 @@ fun PantallaFormularioProducto(
     onVolver: () -> Unit,
     onGuardarExitoso: () -> Unit
 ) {
+    val estadoFormulario by inventarioViewModel.estadoFormulario.collectAsState()
     val scope = rememberCoroutineScope()
-    var guardando by remember { mutableStateOf(false) }
-    var errorFormulario by remember { mutableStateOf<String?>(null) }
 
     PantallaFormularioProductoContent(
-        guardando = guardando,
-        errorFormulario = errorFormulario,
+        estado = estadoFormulario,
+        onSkuChange = inventarioViewModel::onSkuChange,
+        onNombreChange = inventarioViewModel::onNombreChange,
+        onCategoriaChange = inventarioViewModel::onCategoriaChange,
+        onPrecioChange = inventarioViewModel::onPrecioChange,
+        onStockChange = inventarioViewModel::onStockChange,
+        onStockMinimoChange = inventarioViewModel::onStockMinimoChange,
         onVolver = onVolver,
-        onGuardarProducto = { nuevoProducto ->
+        onGuardarProducto = {
             scope.launch {
-                guardando = true
-                try {
-                    inventarioViewModel.agregarProducto(nuevoProducto)
+                val exito = inventarioViewModel.guardarProducto()
+                if (exito) {
                     onGuardarExitoso()
-                } catch (e: Exception) {
-                    errorFormulario = "No se pudo guardar el producto. Inténtalo nuevamente."
-                } finally {
-                    guardando = false
                 }
             }
         }
@@ -50,21 +48,16 @@ fun PantallaFormularioProducto(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaFormularioProductoContent(
-    guardando: Boolean,
-    errorFormulario: String?,
+    estado: InventarioViewModel.EstadoFormularioProducto,
+    onSkuChange: (String) -> Unit,
+    onNombreChange: (String) -> Unit,
+    onCategoriaChange: (String) -> Unit,
+    onPrecioChange: (String) -> Unit,
+    onStockChange: (String) -> Unit,
+    onStockMinimoChange: (String) -> Unit,
     onVolver: () -> Unit,
-    onGuardarProducto: (Producto) -> Unit
+    onGuardarProducto: () -> Unit
 ) {
-    var sku by remember { mutableStateOf("SKU-") }
-    var nombre by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var precio by remember { mutableStateOf("") }
-    var stock by remember { mutableStateOf("") }
-    var stockMinimo by remember { mutableStateOf("1") }
-
-    var errorLocal by remember { mutableStateOf<String?>(null) }
-    val errorMostrar = errorFormulario ?: errorLocal
-
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -98,150 +91,121 @@ fun PantallaFormularioProductoContent(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            OutlinedTextField(
-                value = sku,
-                onValueChange = {
-                    sku = it
-                    errorLocal = null
-                },
-                label = { Text("SKU") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+            MainFormFields(
+                estado = estado,
+                onSkuChange = onSkuChange,
+                onNombreChange = onNombreChange,
+                onCategoriaChange = onCategoriaChange,
+                onPrecioChange = onPrecioChange,
+                onStockChange = onStockChange,
+                onStockMinimoChange = onStockMinimoChange,
+                onGuardarProducto = onGuardarProducto
             )
+        }
+    }
+}
 
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = {
-                    nombre = it
-                    errorLocal = null
-                },
-                label = { Text("Nombre del Producto") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+@Composable
+private fun MainFormFields(
+    estado: InventarioViewModel.EstadoFormularioProducto,
+    onSkuChange: (String) -> Unit,
+    onNombreChange: (String) -> Unit,
+    onCategoriaChange: (String) -> Unit,
+    onPrecioChange: (String) -> Unit,
+    onStockChange: (String) -> Unit,
+    onStockMinimoChange: (String) -> Unit,
+    onGuardarProducto: () -> Unit
+) {
+    OutlinedTextField(
+        value = estado.sku,
+        onValueChange = onSkuChange,
+        label = { Text("SKU") },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+
+    OutlinedTextField(
+        value = estado.nombre,
+        onValueChange = onNombreChange,
+        label = { Text("Nombre del Producto") },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+
+    OutlinedTextField(
+        value = estado.categoria,
+        onValueChange = onCategoriaChange,
+        label = { Text("Categoría") },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+
+    OutlinedTextField(
+        value = estado.precio,
+        onValueChange = onPrecioChange,
+        label = { Text("Precio") },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal,
+            imeAction = ImeAction.Next
+        ),
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+
+    OutlinedTextField(
+        value = estado.stock,
+        onValueChange = onStockChange,
+        label = { Text("Stock Inicial") },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
+        ),
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+
+    OutlinedTextField(
+        value = estado.stockMinimo,
+        onValueChange = onStockMinimoChange,
+        label = { Text("Stock Mínimo") },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        supportingText = {
+            Text("Generará una alerta cuando el stock llegue a este nivel o menos.")
+        },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+
+    estado.errorFormulario?.let { mensaje ->
+        Text(
+            text = mensaje,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Button(
+        onClick = onGuardarProducto,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = !estado.guardando
+    ) {
+        if (estado.guardando) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp
             )
-
-            OutlinedTextField(
-                value = categoria,
-                onValueChange = {
-                    categoria = it
-                    errorLocal = null
-                },
-                label = { Text("Categoría") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            OutlinedTextField(
-                value = precio,
-                onValueChange = {
-                    precio = it
-                    errorLocal = null
-                },
-                label = { Text("Precio") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal,
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            OutlinedTextField(
-                value = stock,
-                onValueChange = {
-                    stock = it
-                    errorLocal = null
-                },
-                label = { Text("Stock Inicial") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            OutlinedTextField(
-                value = stockMinimo,
-                onValueChange = { nuevoValor ->
-                    if (nuevoValor.all { it.isDigit() }) {
-                        stockMinimo = nuevoValor
-                        errorLocal = null
-                    }
-                },
-                label = { Text("Stock Mínimo") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                supportingText = {
-                    Text("Generará una alerta cuando el stock llegue a este nivel o menos.")
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            errorMostrar?.let { mensaje ->
-                Text(
-                    text = mensaje,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    if (guardando) return@Button
-
-                    val skuLimpio = sku.trim()
-                    val precioDouble = precio.toDoubleOrNull()
-                    val stockInt = stock.toIntOrNull()
-                    val stockMinimoInt = stockMinimo.toIntOrNull()
-
-                    val mensajeError = when {
-                        skuLimpio.isBlank() || skuLimpio == "SKU-" -> "Ingresa un SKU válido."
-                        nombre.isBlank() -> "Ingresa el nombre del producto."
-                        categoria.isBlank() -> "Ingresa la categoría."
-                        precioDouble == null || !precioDouble.isFinite() || precioDouble < 0 -> "Ingresa un precio válido."
-                        stockInt == null || stockInt < 0 -> "Ingresa un stock inicial válido."
-                        stockMinimoInt == null || stockMinimoInt < 0 -> "Ingresa un stock mínimo válido."
-                        else -> null
-                    }
-
-                    if (mensajeError != null) {
-                        errorLocal = mensajeError
-                    } else if (precioDouble != null && stockInt != null && stockMinimoInt != null) {
-                        val nuevoProducto = Producto(
-                            sku = skuLimpio,
-                            nombre = nombre.trim(),
-                            categoria = categoria.trim(),
-                            precio = precioDouble,
-                            cantidadDisponible = stockInt,
-                            stock = stockInt,
-                            stockMinimo = stockMinimoInt
-                        )
-                        onGuardarProducto(nuevoProducto)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !guardando
-            ) {
-                if (guardando) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Guardando...")
-                } else {
-                    Text("Guardar Producto")
-                }
-            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Guardando...")
+        } else {
+            Text("Guardar Producto")
         }
     }
 }

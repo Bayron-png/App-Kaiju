@@ -19,6 +19,94 @@ class InventarioViewModel(
     private val repository: InventarioRepository
 ) : ViewModel() {
 
+    data class EstadoFormularioProducto(
+        val sku: String = "SKU-",
+        val nombre: String = "",
+        val categoria: String = "",
+        val precio: String = "",
+        val stock: String = "",
+        val stockMinimo: String = "1",
+        val errorFormulario: String? = null,
+        val guardando: Boolean = false
+    )
+
+    private val _estadoFormulario = MutableStateFlow(EstadoFormularioProducto())
+    val estadoFormulario: StateFlow<EstadoFormularioProducto> = _estadoFormulario.asStateFlow()
+
+    fun onSkuChange(nuevoSku: String) {
+        _estadoFormulario.value = _estadoFormulario.value.copy(sku = nuevoSku, errorFormulario = null)
+    }
+
+    fun onNombreChange(nuevoNombre: String) {
+        _estadoFormulario.value = _estadoFormulario.value.copy(nombre = nuevoNombre, errorFormulario = null)
+    }
+
+    fun onCategoriaChange(nuevaCategoria: String) {
+        _estadoFormulario.value = _estadoFormulario.value.copy(categoria = nuevaCategoria, errorFormulario = null)
+    }
+
+    fun onPrecioChange(nuevoPrecio: String) {
+        _estadoFormulario.value = _estadoFormulario.value.copy(precio = nuevoPrecio, errorFormulario = null)
+    }
+
+    fun onStockChange(nuevoStock: String) {
+        _estadoFormulario.value = _estadoFormulario.value.copy(stock = nuevoStock, errorFormulario = null)
+    }
+
+    fun onStockMinimoChange(nuevoStockMinimo: String) {
+        if (nuevoStockMinimo.all { it.isDigit() }) {
+            _estadoFormulario.value = _estadoFormulario.value.copy(stockMinimo = nuevoStockMinimo, errorFormulario = null)
+        }
+    }
+
+    fun resetearFormulario() {
+        _estadoFormulario.value = EstadoFormularioProducto()
+    }
+
+    suspend fun guardarProducto(): Boolean {
+        val actual = _estadoFormulario.value
+        val skuLimpio = actual.sku.trim()
+        val precioDouble = actual.precio.toDoubleOrNull()
+        val stockInt = actual.stock.toIntOrNull()
+        val stockMinimoInt = actual.stockMinimo.toIntOrNull()
+
+        val mensajeError = when {
+            skuLimpio.isBlank() || skuLimpio == "SKU-" -> "Ingresa un SKU válido."
+            actual.nombre.isBlank() -> "Ingresa el nombre del producto."
+            actual.categoria.isBlank() -> "Ingresa la categoría."
+            precioDouble == null || !precioDouble.isFinite() || precioDouble < 0 -> "Ingresa un precio válido."
+            stockInt == null || stockInt < 0 -> "Ingresa un stock inicial válido."
+            stockMinimoInt == null || stockMinimoInt < 0 -> "Ingresa un stock mínimo válido."
+            else -> null
+        }
+
+        if (mensajeError != null) {
+            _estadoFormulario.value = actual.copy(errorFormulario = mensajeError)
+            return false
+        }
+
+        _estadoFormulario.value = actual.copy(guardando = true, errorFormulario = null)
+        return try {
+            val nuevoProducto = Producto(
+                sku = skuLimpio,
+                nombre = actual.nombre.trim(),
+                categoria = actual.categoria.trim(),
+                precio = precioDouble!!,
+                cantidadDisponible = stockInt!!,
+                stock = stockInt,
+                stockMinimo = stockMinimoInt!!
+            )
+            agregarProducto(nuevoProducto)
+            true
+        } catch (e: Exception) {
+            _estadoFormulario.value = actual.copy(
+                guardando = false,
+                errorFormulario = "No se pudo guardar el producto. Inténtalo nuevamente."
+            )
+            false
+        }
+    }
+
     val productos: StateFlow<List<Producto>> = repository.productos
         .stateIn(
             scope = viewModelScope,
