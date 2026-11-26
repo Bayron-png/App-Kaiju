@@ -98,12 +98,76 @@ class InventarioViewModel(
             )
             agregarProducto(nuevoProducto)
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             _estadoFormulario.value = actual.copy(
                 guardando = false,
                 errorFormulario = "No se pudo guardar el producto. Inténtalo nuevamente."
             )
             false
+        }
+    }
+
+    data class EstadoFormularioMovimiento(
+        val sku: String = "",
+        val esEntrada: Boolean = true,
+        val cantidad: String = "",
+        val errorFormulario: String? = null,
+        val guardando: Boolean = false
+    )
+
+    private val _estadoMovimiento = MutableStateFlow(EstadoFormularioMovimiento())
+    val estadoMovimiento: StateFlow<EstadoFormularioMovimiento> = _estadoMovimiento.asStateFlow()
+
+    fun onSkuMovimientoChange(sku: String) {
+        _estadoMovimiento.value = _estadoMovimiento.value.copy(sku = sku, errorFormulario = null)
+    }
+
+    fun onTipoMovimientoChange(esEntrada: Boolean) {
+        _estadoMovimiento.value = _estadoMovimiento.value.copy(esEntrada = esEntrada)
+    }
+
+    fun onCantidadMovimientoChange(cantidad: String) {
+        if (cantidad.all { it.isDigit() }) {
+            _estadoMovimiento.value = _estadoMovimiento.value.copy(cantidad = cantidad, errorFormulario = null)
+        }
+    }
+
+    fun resetearFormularioMovimiento() {
+        _estadoMovimiento.value = EstadoFormularioMovimiento(sku = skuSeleccionado)
+    }
+
+    suspend fun validarYRegistrarMovimiento(): Pair<Producto?, Boolean> {
+        val actual = _estadoMovimiento.value
+        val skuLimpio = actual.sku.trim()
+        val cantidadInt = actual.cantidad.toIntOrNull()
+
+        val error = when {
+            skuLimpio.isBlank() -> "Ingresa un SKU válido."
+            productos.value.none { it.sku == skuLimpio } -> "No existe un producto con el SKU ingresado."
+            cantidadInt == null || cantidadInt <= 0 -> "Ingresa una cantidad mayor a 0."
+            else -> null
+        }
+
+        if (error != null) {
+            _estadoMovimiento.value = actual.copy(errorFormulario = error)
+            return Pair(null, false)
+        }
+
+        _estadoMovimiento.value = actual.copy(guardando = true, errorFormulario = null)
+        return try {
+            val productoAlerta = registrarMovimiento(
+                sku = skuLimpio,
+                esEntrada = actual.esEntrada,
+                cantidad = cantidadInt!!
+            )
+            _estadoMovimiento.value = EstadoFormularioMovimiento()
+            Pair(productoAlerta, true)
+        } catch (_: Exception) {
+            _estadoMovimiento.value = actual.copy(
+                guardando = false,
+                errorFormulario = "No se pudo registrar el movimiento. Inténtalo nuevamente."
+            )
+            Pair(null, false)
         }
     }
 

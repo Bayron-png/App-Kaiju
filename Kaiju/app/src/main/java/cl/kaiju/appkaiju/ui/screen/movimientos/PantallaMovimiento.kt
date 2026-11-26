@@ -1,4 +1,3 @@
-
 package cl.kaiju.appkaiju.ui.screen.movimientos
 
 import android.Manifest
@@ -21,8 +20,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.compose.runtime.rememberCoroutineScope
 import cl.kaiju.appkaiju.util.NotificacionStock
 import cl.kaiju.appkaiju.viewmodel.catalogo.InventarioViewModel
 import kotlinx.coroutines.launch
@@ -34,13 +31,7 @@ fun PantallaMovimiento(
     onVolver: () -> Unit,
     onMovimientoRegistrado: () -> Unit
 ) {
-    val productos by inventarioViewModel.productos.collectAsState()
-    val skuInicial = inventarioViewModel.skuSeleccionado
-
-    var sku by remember { mutableStateOf(skuInicial) }
-    var esEntrada by remember { mutableStateOf(true) }
-    var cantidadText by remember { mutableStateOf("") }
-    var errorFormulario by remember { mutableStateOf<String?>(null) }
+    val estadoMovimiento by inventarioViewModel.estadoMovimiento.collectAsState()
 
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -48,7 +39,7 @@ fun PantallaMovimiento(
 
     val permisoNotificaciones = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { concedido ->
+    ) { _ ->
         // El permiso se comprueba nuevamente cuando se necesita mostrar
         // una notificación. Si se deniega, el movimiento igualmente se registra.
     }
@@ -85,11 +76,8 @@ fun PantallaMovimiento(
             )
 
             OutlinedTextField(
-                value = sku,
-                onValueChange = {
-                    sku = it
-                    errorFormulario = null
-                },
+                value = estadoMovimiento.sku,
+                onValueChange = inventarioViewModel::onSkuMovimientoChange,
                 label = { Text("SKU del Producto") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
@@ -101,28 +89,23 @@ fun PantallaMovimiento(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FilterChip(
-                    selected = esEntrada,
-                    onClick = { esEntrada = true },
+                    selected = estadoMovimiento.esEntrada,
+                    onClick = { inventarioViewModel.onTipoMovimientoChange(true) },
                     label = { Text("Entrada (+)") },
                     modifier = Modifier.weight(1f)
                 )
 
                 FilterChip(
-                    selected = !esEntrada,
-                    onClick = { esEntrada = false },
+                    selected = !estadoMovimiento.esEntrada,
+                    onClick = { inventarioViewModel.onTipoMovimientoChange(false) },
                     label = { Text("Salida (-)") },
                     modifier = Modifier.weight(1f)
                 )
             }
 
             OutlinedTextField(
-                value = cantidadText,
-                onValueChange = {
-                    if (it.all { char -> char.isDigit() }) {
-                        cantidadText = it
-                        errorFormulario = null
-                    }
-                },
+                value = estadoMovimiento.cantidad,
+                onValueChange = inventarioViewModel::onCantidadMovimientoChange,
                 label = { Text("Cantidad") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -132,7 +115,7 @@ fun PantallaMovimiento(
                 singleLine = true
             )
 
-            errorFormulario?.let { mensaje ->
+            estadoMovimiento.errorFormulario?.let { mensaje ->
                 Text(
                     text = mensaje,
                     color = MaterialTheme.colorScheme.error,
@@ -144,33 +127,10 @@ fun PantallaMovimiento(
 
             Button(
                 onClick = {
-                    val skuLimpio = sku.trim()
-                    val cantidadInt = cantidadText.toIntOrNull()
+                    scope.launch {
+                        val (productoAlerta, exito) = inventarioViewModel.validarYRegistrarMovimiento()
 
-                    val error = when {
-                        skuLimpio.isBlank() ->
-                            "Ingresa un SKU válido."
-
-                        productos.none { it.sku == skuLimpio } ->
-                            "No existe un producto con el SKU ingresado."
-
-                        cantidadInt == null || cantidadInt <= 0 ->
-                            "Ingresa una cantidad mayor a 0."
-
-                        else -> null
-                    }
-
-                    if (error != null) {
-                        errorFormulario = error
-                    } else {
-                        scope.launch {
-                            val productoAlerta =
-                                inventarioViewModel.registrarMovimiento(
-                                    sku = skuLimpio,
-                                    esEntrada = esEntrada,
-                                    cantidad = cantidadInt!!
-                                )
-
+                        if (exito) {
                             if (productoAlerta != null) {
                                 val permisoConcedido =
                                     Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
@@ -197,9 +157,19 @@ fun PantallaMovimiento(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !estadoMovimiento.guardando
             ) {
-                Text("Registrar Movimiento")
+                if (estadoMovimiento.guardando) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Registrando...")
+                } else {
+                    Text("Registrar Movimiento")
+                }
             }
         }
     }

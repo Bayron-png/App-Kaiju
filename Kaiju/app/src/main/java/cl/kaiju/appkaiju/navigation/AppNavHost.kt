@@ -190,6 +190,7 @@ fun AppNavHost() {
                 onVolver = { navController.popBackStack() },
                 onIrAMovimiento = {
                     if (!esInvitado) {
+                        inventarioViewModel.resetearFormularioMovimiento()
                         navController.navigate(Rutas.Movimiento.ruta)
                     }
                 }
