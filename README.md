@@ -1,8 +1,10 @@
-![Lenguaje](https://img.shields.io/badge/Lenguaje-Kotlin-purple)
-![Interfaz](https://img.shields.io/badge/Interfaz-JetpackCompose-blue)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=flat&logo=jetpackcompose&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat&logo=kotlin&logoColor=white)
+![Android Studio](https://img.shields.io/badge/Android%20Studio-2E9E55?style=flat&logo=androidstudio&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
 # App Kaiju
 
-## Integrantes participantes
+## Integrantes
 
 | Nombre completo                 | Correo                 |
 | ------------------------------- | ---------------------- |
@@ -10,11 +12,13 @@
 | Mario Ignacio Andrade Salinas   | mar.andrades@duocuc.cl |
 | Bayron Alexander Urrutia Flores | bay.urrutia@duocuc.cl  |
 
-## **Caso**
-El caso de la tienda Kaiju solicita desarrollar un Producto Mínimo Viable (MVP) para una aplicación móvil Android. Su principal objetivo es automatizar y optimizar el registro, la trazabilidad y la gestión del inventario y ventas, reemplazando el control manual actual por uno actualizado en tiempo real.
+**Repositorio Backend:** [Kaiju - Backend](https://github.com/Bayron-png/Kaiju-Backend)
+
+## **Contexto**
+El caso de la tienda Kaiju solicita desarrollar una aplicación móvil Android. El objetivo principal  es automatizar y optimizar el registro, la trazabilidad y la gestión del inventario y ventas, reemplazando el control manual actual por uno actualizado en tiempo real.
 
 ## **Funcionalidades implementadas**
-La aplicación móvil Kaiju permite consultar y administrar el catálogo de productos de la tienda, incorporando funcionalidades de control de inventario y alertas de stock.
+La aplicación móvil **Kaiju** permite consultar y administrar el catálogo de productos de la tienda, incorporando funcionalidades de control de inventario y alertas de stock:
 
 ### Catálogo de productos
 - Visualización del catálogo de productos disponibles en la aplicación.
@@ -30,17 +34,46 @@ La aplicación móvil Kaiju permite consultar y administrar el catálogo de prod
 
 ### Gestión de inventario
 - Registro de movimientos de inventario asociados a cada producto.
-- Actualización de las cantidades de stock mediante los siguientes tipos de movimiento:
-* **Ingreso:** aumenta la cantidad disponible del producto.
-* **Salida:** disminuye la cantidad disponible del producto.
-* **Ajuste:** permite corregir las cantidades de inventario según las necesidades de la tienda.
-- Registro del motivo de cada movimiento para facilitar el seguimiento de los cambios realizados.
 - Consulta del historial de movimientos de cada producto.
+- Actualización de las cantidades de stock mediante los siguientes tipos de movimiento:
+1. **Ingreso:** aumenta la cantidad disponible del producto.
+2. **Salida:** disminuye la cantidad disponible del producto.
 
 ### Sistema de alertas de stock
 - Identificación de productos sin stock disponible.
 - Detección de productos con stock bajo según el mínimo configurado para cada uno y productos con stock en 0.
 - Acceso a un apartado de alertas para facilitar la supervisión del inventario y la identificación de productos que requieren reposición.
+
+## Endpoints
+Se implementó un Backend para la gestión de productos y usuarios, además de la API pública **"PokeAPI"**, disponiendo de una amplia base de datos con información de pokemones para uso público. 
+|URL del EndPoint                               | Descripción del Endpoint|
+|-----------------------------------------------|-------------------------|
+|`https://pokeapi.co/api/v2/`                   |Corresponde al Endpoint base del Easter Egg, muestra la barra de búsqueda para ingresar el ID o nombre del pokemón a buscar|
+|`https://pokeapi.co/api/v2/pokemon/{nombreOId}`|Muestra el pokemón ingresado en caso de coincidir el ID o nombre con un pokemón registrado en la base de datos|
+
+
+### Descripción Easter-Egg
+La función secreta corresponde a un apartado que se accede clickeando repetidamente el logo de kaiju en la pantalla inicio de sesión. Esta pantalla provee información de pokemones como su:
+- ID
+- Nombre
+- Tipo
+- Altura
+- Peso
+- Imagen del mismo
+
+
+### Cómo activar el Easter Egg
+Al pulsar **10 veces seguidas** en el logo de la pantalla de inicio de sesión (*Login*), se activa el disparador que redirige automáticamente a la pantalla oculta de la Pokédex.
+
+### Cómo probarlo
+Una vez activado el Easter Egg y estando en la pantalla de la Pokédex:
+1. Asegúrate de que el dispositivo tenga conexión a internet (se valida el permiso de red).
+2. Ingresa el nombre de un Pokémon en la barra de búsqueda (por ejemplo: `pikachu`, `charizard`, `bulbasaur`) o su ID numérico (por ejemplo: `25`, `1`).
+3. Presiona el botón de **Buscar**.
+4. La aplicación consultará la PokeAPI y mostrará en pantalla la tarjeta con el ID, nombre, tipo, altura, peso e imagen del Pokémon consultado.
+
+### Captura del Easter-Egg
+<img width="1080" height="2216" alt="Screenshot_2026-11-04-20-57-57-835_cl kaiju appkaiju-edit" src="https://github.com/user-attachments/assets/1641cb7a-4505-489b-8f55-7bc495aefe34" />
 
 ## Instrucciones para configurar y ejecutar la aplicación
 
@@ -68,42 +101,9 @@ cd App-Kaiju
 
 6. Probar las funcionalidades. Una vez iniciada la aplicación, acceder al catálogo en modo invitado o utilizar un perfil con permisos de administración para gestionar productos, registrar movimientos y consultar las alertas de inventario.
 
-## **Arquitectura**
-Kotlin + Jetpack Compose, patrón MVVM.
-
-## Diseño y planificación
-Sketch, wireframe, mockup y demás material de diseño del equipo (Subidos al drive).
-
 ### **Carpetas del equipo:**
 - [Drive Caso Kaiju](https://drive.google.com/drive/folders/12vOZTJMERUu-XkpzzRBcUCfUwOX1UqIa?usp=drive_link)
 - [Tablero Trello](https://trello.com/b/rKnWL8ft/caso-kaiju-desarrollo-apps-moviles)
 - [Diagrama de flujo](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Diagrama%20de%20flujo%20-%20app%20Kaiju.drawio&dark=0#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1uI4tBsdldcoiiz9aATtBcTlo7mZs2bQp%26export%3Ddownload)
 
-## **Función Secreta (Easter Egg)**
-
-### Descripción
-La función secreta corresponde a un apartado que se accede clickeando el logo de kaiju en la pantalla inicio de sesión. Esta pantalla provee información de pokemones como su:
-- ID
-- Nombre
-- Tipo
-- Altura
-- Peso
-- Imagen del mismo
-
-### API
-La API utilizada fué **"PokeAPI"**, disponiendo de una amplia base de datos con información de pokemones para uso público.
-
-### EndPoint
-El endpoint utilizado en este caso fué `https://pokeapi.co/api/v2/` y su variante es `https://pokeapi.co/api/v2/pokemon/{nombreOId}`.
-
-### Cómo activar el Easter Egg
-Al pulsar **10 veces seguidas** en el logo de la pantalla de inicio de sesión (*Login*), se activa el disparador que redirige automáticamente a la pantalla oculta de la Pokédex.
-
-### Cómo probarla
-Una vez activado el Easter Egg y estando en la pantalla de la Pokédex:
-1. Asegúrate de que el dispositivo tenga conexión a internet (se valida el permiso de red).
-2. Ingresa el nombre de un Pokémon en la barra de búsqueda (por ejemplo: `pikachu`, `charizard`, `bulbasaur`) o su ID numérico (por ejemplo: `25`, `1`).
-3. Presiona el botón de **Buscar**.
-4. La aplicación consultará la PokeAPI y mostrará en pantalla la tarjeta con el ID, nombre, tipo, altura, peso e imagen del Pokémon consultado.
-
-### Capturas<img width="1080" height="2216" alt="Screenshot_2026-11-04-20-57-57-835_cl kaiju appkaiju-edit" src="https://github.com/user-attachments/assets/1641cb7a-4505-489b-8f55-7bc495aefe34" />
+## Capturas del APK firmado
