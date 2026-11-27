@@ -11,6 +11,7 @@ sealed class Rutas(val ruta: String) {
         fun crearRuta(sku: String, esInvitado: Boolean) =
             "detalle_producto/$sku/$esInvitado"
     }
+    object GestionUsuarios : Rutas("gestion_usuarios")
     object RegistrarVenta : Rutas("registrar_venta")
     object Movimiento : Rutas("movimiento")
     object Alertas : Rutas("alertas")

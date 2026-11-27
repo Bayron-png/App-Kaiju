@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cl.kaiju.appkaiju.data.dao.AppDatabase
 import cl.kaiju.appkaiju.repository.catalogo.InventarioRepository
+import cl.kaiju.appkaiju.ui.screen.Usuarios.PantallaGestionUsuarios
 import cl.kaiju.appkaiju.ui.screen.alertas.PantallaAlertas
 import cl.kaiju.appkaiju.ui.screen.catalogo.PantallaCatalogo
 import cl.kaiju.appkaiju.ui.screen.formulario.PantallaFormularioProducto
@@ -203,6 +204,14 @@ fun AppNavHost() {
                 onVolver = { navController.popBackStack() },
                 onMovimientoRegistrado = { navController.popBackStack() }
             )
+        }
+
+        composable(Rutas.GestionUsuarios.ruta) {
+            RutaProtegida(rol, Rutas.GestionUsuarios.ruta, irALogin) {
+                PantallaGestionUsuarios(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
         }
 
         // 🥚 Pokédex (Easter Egg)

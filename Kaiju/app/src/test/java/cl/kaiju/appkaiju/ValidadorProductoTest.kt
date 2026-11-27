@@ -11,11 +11,11 @@ class ValidadorProductoTest {
     fun `test 1 - datos validos retornan null sin errores`() {
         val resultado = ValidadorProducto.validarFormulario(
             sku = "SKU-101",
-            nombre = "Polera Kaiju roja",
+            nombre = "Polera Roja Kaiju",
             categoria = "Poleras",
-            precio = "19990",
-            stock = "10",
-            stockMinimo = "2"
+            precio = "15000",
+            stock = "18",
+            stockMinimo = "5"
         )
         assertNull(resultado)
     }
@@ -24,15 +24,15 @@ class ValidadorProductoTest {
     fun `test 2 - sku vacio o por defecto retorna error de sku`() {
         val resultadoVacio = ValidadorProducto.validarFormulario(
             sku = "   ",
-            nombre = "Polera Kaiju azul",
+            nombre = "Polera Azul Kaiju",
             categoria = "Poleras",
             precio = "15000",
-            stock = "10",
-            stockMinimo = "2"
+            stock = "3",
+            stockMinimo = "5"
         )
         val resultadoDefecto = ValidadorProducto.validarFormulario(
             sku = "SKU-",
-            nombre = "Polera Kaiju blanca",
+            nombre = "Polera Blanca Kaiju",
             categoria = "Poleras",
             precio = "15000",
             stock = "10",
@@ -83,7 +83,7 @@ class ValidadorProductoTest {
     fun `test 5 - stock inicial negativo o invalido retorna error de stock`() {
         val negativo = ValidadorProducto.validarFormulario(
             sku = "SKU-106",
-            nombre = "Polera Amarilla Kaiju",
+            nombre = "Polera Blanca Kaiju",
             categoria = "Poleras",
             precio = "15000",
             stock = "-3",

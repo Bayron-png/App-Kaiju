@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.vector.ImageVector
 import cl.kaiju.appkaiju.model.usuario.RolUsuario
+import androidx.compose.material.icons.filled.People
 
 
 data class DestinoNavegacion(
@@ -29,7 +30,14 @@ object Destinos {
             Rutas.RegistrarVenta.ruta, "Registrar Venta", Icons.Default.ShoppingCart,
             setOf(RolUsuario.VENDEDOR),
             enBarra = false
+        ),
+
+        DestinoNavegacion(
+            Rutas.GestionUsuarios.ruta, "Usuarios", Icons.Default.People,
+            setOf(RolUsuario.ADMINISTRADOR),
+            enBarra = true
         )
+
     )
     fun paraRol(rol: RolUsuario) =
         todos.filter { it.enBarra && rol in it.roles }
