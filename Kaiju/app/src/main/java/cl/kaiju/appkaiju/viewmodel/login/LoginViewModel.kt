@@ -3,6 +3,7 @@ package cl.kaiju.appkaiju.viewmodel.login
 import android.util.Patterns
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import cl.kaiju.appkaiju.model.login.EstadoLogin
 import cl.kaiju.appkaiju.model.login.SesionActual
 import cl.kaiju.appkaiju.model.usuario.RolUsuario
@@ -11,6 +12,10 @@ import cl.kaiju.appkaiju.repository.login.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class LoginViewModel(
     private val usuarioRepository: UsuarioRepository = UsuarioRepository()
@@ -21,10 +26,9 @@ class LoginViewModel(
 
     fun ingresarComoInvitado() {
         val invitado = Usuario(
-            "Invitado",
-            "invitado@kaiju.cl",
-            "",
-            RolUsuario.INVITADO
+            nombre = "Invitado",
+            correo = "invitado@kaiju.cl",
+            rol = RolUsuario.INVITADO
         )
 
         SesionActual.iniciarSesion(invitado)
@@ -70,37 +74,48 @@ class LoginViewModel(
         _estado.value = EstadoLogin()
     }
 
-    fun iniciarSesion(): Boolean {
-
-        // Valida el formato, si falla, no consulta al repositorio
-        if (!validarFormularioLogin()) {
-            return false
-        }
+    // Consulta al backend. Si el login es correcto llama a onExito (ya con el rol guardado).
+    fun iniciarSesion(onExito: () -> Unit) {
+        // Valida el formato, si falla, no consulta al backend
+        if (!validarFormularioLogin() || _estado.value.cargando) return
 
         val correo = _estado.value.correo
         val contrasena = _estado.value.contrasena
+        _estado.value = _estado.value.copy(cargando = true, errorCredenciales = null)
 
-        // Devuelve el usuario si coinciden correo y contraseña o null si no
-        val usuario = usuarioRepository.autenticar(correo, contrasena)
-
-        return if (usuario != null) {
-            SesionActual.iniciarSesion(usuario)
-
-            // Exito: guarda el usuario (con su rol) y limpia todos los errores
-            _estado.value = _estado.value.copy(
-                usuarioAutenticado = usuario,
-                errorCorreo = null,
-                errorContrasena = null,
-                errorCredenciales = null
-            )
-            true
-        } else {
-            // Fallo: un solo error generico que pinta ambos campos en rojo,
-            // sin mostrar cual de los dos datos estaba mal
-            _estado.value = _estado.value.copy(
-                errorCredenciales = "Correo o contraseña incorrectos"
-            )
-            false
+        viewModelScope.launch {
+            try {
+                val sesion = usuarioRepository.autenticar(correo, contrasena)
+                SesionActual.iniciarSesion(sesion.usuario, sesion.token)
+                _estado.value = _estado.value.copy(
+                    usuarioAutenticado = sesion.usuario,
+                    cargando = false,
+                    errorCorreo = null,
+                    errorContrasena = null,
+                    errorCredenciales = null
+                )
+                onExito()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: HttpException) {
+                // 401: un solo error generico, sin decir cual de los dos datos estaba mal
+                val mensaje = if (e.code() == 401) {
+                    "Correo o contraseña incorrectos"
+                } else {
+                    "Error del servidor (${e.code()}). Inténtalo nuevamente"
+                }
+                _estado.value = _estado.value.copy(cargando = false, errorCredenciales = mensaje)
+            } catch (e: IOException) {
+                _estado.value = _estado.value.copy(
+                    cargando = false,
+                    errorCredenciales = "No se pudo conectar con el servidor"
+                )
+            } catch (e: Exception) {
+                _estado.value = _estado.value.copy(
+                    cargando = false,
+                    errorCredenciales = "Ocurrió un error inesperado"
+                )
+            }
         }
     }
 

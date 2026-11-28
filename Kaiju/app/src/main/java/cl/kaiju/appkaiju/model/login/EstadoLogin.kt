@@ -8,5 +8,6 @@ data class EstadoLogin(
     val contrasena: String = "",
     val errorContrasena: String? = null,
     val errorCredenciales: String? = null,
-    val usuarioAutenticado: Usuario? = null // Almacena el rol del usuario
+    val usuarioAutenticado: Usuario? = null, // Almacena el rol del usuario
+    val cargando: Boolean = false // true mientras se espera la respuesta del backend
 )

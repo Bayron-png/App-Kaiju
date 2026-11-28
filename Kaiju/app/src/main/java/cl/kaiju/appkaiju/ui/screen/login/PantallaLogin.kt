@@ -64,9 +64,7 @@ fun PantallaLogin(
 
     val intentarLogin = {
         focusManager.clearFocus()
-        if (loginViewModel.iniciarSesion()) {
-            onLoginExitoso()
-        }
+        loginViewModel.iniciarSesion(onLoginExitoso)
     }
 
     Column(
@@ -166,6 +164,7 @@ fun PantallaLogin(
 
         Button(
             onClick = { intentarLogin() },
+            enabled = !estado.cargando,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -173,7 +172,7 @@ fun PantallaLogin(
                 containerColor = Primario
             )
         ) {
-            Text("Ingresar")
+            Text(if (estado.cargando) "Ingresando..." else "Ingresar")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
