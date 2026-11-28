@@ -13,7 +13,7 @@ object  KaijuApiClient {
     //  - Emulador de Android Studio -> el PC se ve como 10.0.2.2
     //  - Celular físico             -> IP local del PC, ej. http://192.168.1.50:3000/api/v1/
     //  - Servidor en AWS            -> http://IP_PUBLICA:3000/api/v1/
-    const val BASE_URL = "http://192.168.88.18:3000/api/v1/"
+    const val BASE_URL = "http://localhost:3000/api/v1/"
 
     // Agrega el token JWT a cada petición cuando hay una sesión iniciada.
     // Solo se usa en este cliente: la PokeAPI tiene su propio cliente y nunca recibe el token.
